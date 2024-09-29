@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite"
 import React, { ComponentType, FC, useEffect, useMemo } from "react"
 import {
   AccessibilityProps,
@@ -29,12 +28,13 @@ import {
   ListView,
   Screen,
   Text,
+  TextField,
   Toggle,
 } from "../components"
 import { isRTL, translate } from "../i18n"
 import { useStores } from "../models"
 import { Episode } from "../models/Episode"
-import { DemoTabScreenProps } from "../navigators/DemoNavigator"
+import {TabScreenProps } from "../navigators/TabNavigator"
 import { colors, spacing } from "../theme"
 import { delay } from "../utils/delay"
 import { openLinkInBrowser } from "../utils/openLinkInBrowser"
@@ -46,28 +46,18 @@ const rnrImage2 = require("../../assets/images/demo/rnr-image-2.png")
 const rnrImage3 = require("../../assets/images/demo/rnr-image-3.png")
 const rnrImages = [rnrImage1, rnrImage2, rnrImage3]
 
-export const DemoPodcastListScreen: FC<DemoTabScreenProps<"DemoPodcastList">> = observer(
-  function DemoPodcastListScreen(_props) {
-    const { episodeStore } = useStores()
+export const SearchFrinedScreen: FC<TabScreenProps<"SearchFrinedScreen">> = 
+  function SearchFrinedScreen(_props) {
+  
 
     const [refreshing, setRefreshing] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
 
     // initially, kick off a background refresh without the refreshing UI
-    useEffect(() => {
-      ;(async function load() {
-        setIsLoading(true)
-        await episodeStore.fetchEpisodes()
-        setIsLoading(false)
-      })()
-    }, [episodeStore])
+   
 
     // simulate a longer refresh, if the refresh is too fast for UX
-    async function manualRefresh() {
-      setRefreshing(true)
-      await Promise.all([episodeStore.fetchEpisodes(), delay(750)])
-      setRefreshing(false)
-    }
+  
 
     return (
       <Screen
@@ -75,71 +65,15 @@ export const DemoPodcastListScreen: FC<DemoTabScreenProps<"DemoPodcastList">> = 
         safeAreaEdges={["top"]}
         contentContainerStyle={$screenContentContainer}
       >
-        <ListView<Episode>
-          contentContainerStyle={$listContentContainer}
-          data={episodeStore.episodesForList.slice()}
-          extraData={episodeStore.favorites.length + episodeStore.episodes.length}
-          refreshing={refreshing}
-          estimatedItemSize={177}
-          onRefresh={manualRefresh}
-          ListEmptyComponent={
-            isLoading ? (
-              <ActivityIndicator />
-            ) : (
-              <EmptyState
-                preset="generic"
-                style={$emptyState}
-                headingTx={
-                  episodeStore.favoritesOnly
-                    ? "demoPodcastListScreen.noFavoritesEmptyState.heading"
-                    : undefined
-                }
-                contentTx={
-                  episodeStore.favoritesOnly
-                    ? "demoPodcastListScreen.noFavoritesEmptyState.content"
-                    : undefined
-                }
-                button={episodeStore.favoritesOnly ? "" : undefined}
-                buttonOnPress={manualRefresh}
-                imageStyle={$emptyStateImage}
-                ImageProps={{ resizeMode: "contain" }}
-              />
-            )
-          }
-          ListHeaderComponent={
-            <View style={$heading}>
-              <Text preset="heading" tx="demoPodcastListScreen.title" />
-              {(episodeStore.favoritesOnly || episodeStore.episodesForList.length > 0) && (
-                <View style={$toggle}>
-                  <Toggle
-                    value={episodeStore.favoritesOnly}
-                    onValueChange={() =>
-                      episodeStore.setProp("favoritesOnly", !episodeStore.favoritesOnly)
-                    }
-                    variant="switch"
-                    labelTx="demoPodcastListScreen.onlyFavorites"
-                    labelPosition="left"
-                    labelStyle={$labelStyle}
-                    accessibilityLabel={translate("demoPodcastListScreen.accessibility.switch")}
-                  />
-                </View>
-              )}
-            </View>
-          }
-          renderItem={({ item }) => (
-            <EpisodeCard
-              episode={item}
-              isFavorite={episodeStore.hasFavorite(item)}
-              onPressFavorite={() => episodeStore.toggleFavorite(item)}
-            />
-          )}
+        <TextField
+         placeholder="Search"
         />
       </Screen>
     )
-  },
-)
+  }
 
-const EpisodeCard = observer(function EpisodeCard({
+
+const EpisodeCard = function EpisodeCard({
   episode,
   isFavorite,
   onPressFavorite,
@@ -298,7 +232,7 @@ const EpisodeCard = observer(function EpisodeCard({
       }
     />
   )
-})
+}
 
 // #region Styles
 const $screenContentContainer: ViewStyle = {

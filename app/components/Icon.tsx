@@ -91,6 +91,7 @@ export const iconRegistry = {
   caretLeft: require("../../assets/icons/caretLeft.png"),
   caretRight: require("../../assets/icons/caretRight.png"),
   check: require("../../assets/icons/check.png"),
+  camera:require("../../assets/icons/camara.png"),
   clap: require("../../assets/icons/demo/clap.png"), // @demo remove-current-line
   community: require("../../assets/icons/demo/community.png"), // @demo remove-current-line
   components: require("../../assets/icons/demo/components.png"), // @demo remove-current-line
@@ -98,6 +99,7 @@ export const iconRegistry = {
   github: require("../../assets/icons/demo/github.png"), // @demo remove-current-line
   heart: require("../../assets/icons/demo/heart.png"), // @demo remove-current-line
   hidden: require("../../assets/icons/hidden.png"),
+  home: require("../../assets/icons/home.png"),
   ladybug: require("../../assets/icons/ladybug.png"),
   lock: require("../../assets/icons/lock.png"),
   menu: require("../../assets/icons/menu.png"),
@@ -106,6 +108,8 @@ export const iconRegistry = {
   podcast: require("../../assets/icons/demo/podcast.png"), // @demo remove-current-line
   settings: require("../../assets/icons/settings.png"),
   slack: require("../../assets/icons/demo/slack.png"), // @demo remove-current-line
+  search: require("../../assets/icons/search.png"),
+  user: require("../../assets/icons/usuario.png"),
   view: require("../../assets/icons/view.png"),
   x: require("../../assets/icons/x.png"),
 }

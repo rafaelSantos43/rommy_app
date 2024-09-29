@@ -17,7 +17,7 @@ import { useColorScheme } from "react-native"
 import * as Screens from "app/screens"
 import Config from "../config"
 import { useStores } from "../models" // @demo remove-current-line
-import { DemoNavigator, DemoTabParamList } from "./DemoNavigator" // @demo remove-current-line
+import { TabNavigator, TabParamList } from "./TabNavigator" // @demo remove-current-line
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { colors } from "app/theme"
 import { useStore } from "app/store/useStore"
@@ -38,7 +38,7 @@ import { useStore } from "app/store/useStore"
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined // @demo remove-current-line
-  Demo: NavigatorScreenParams<DemoTabParamList> // @demo remove-current-line
+  TabNavigator: NavigatorScreenParams<TabParamList> // @demo remove-current-line
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -53,32 +53,32 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStack
   AppStackParamList,
   T
 >
-
-// Documentation: https://reactnavigation.org/docs/stack-navigator/
 const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = observer(function AppStack() {
-  const {session} = useStore()
+  const { session } = useStore()
 
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, navigationBarColor: colors.background }}
-     // initialRouteName={isAuthenticated ? "Welcome" : "Login"} // @demo remove-current-line
+      // initialRouteName={isAuthenticated ? "Welcome" : "Login"} // @demo remove-current-line
     >
-      {/* @demo remove-block-start */}
-      { session ? (
+      {session ? (
         <>
-          <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
-          <Stack.Screen name="Demo" component={DemoNavigator} />
+          <Stack.Screen name="TabNavigator" component={TabNavigator} />
         </>
       ) : (
         <>
-          <Stack.Screen name="Login" component={Screens.LoginScreen} />
+          <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
+          <Stack.Screen
+            name="Login"
+            component={Screens.LoginScreen}
+            options={{
+              headerShown: true,
+            }}
+          />
         </>
       )}
-      {/* @demo remove-block-end */}
-      {/** 🔥 Your screens go here */}
-      {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>
   )
 })
@@ -86,7 +86,7 @@ const AppStack = observer(function AppStack() {
 export interface NavigationProps
   extends Partial<React.ComponentProps<typeof NavigationContainer>> {}
 
-export const AppNavigator = observer(function AppNavigator(props: NavigationProps) {
+export const AppNavigator =function AppNavigator(props: NavigationProps) {
   const colorScheme = useColorScheme()
 
   useBackButtonHandler((routeName) => exitRoutes.includes(routeName))
@@ -100,4 +100,4 @@ export const AppNavigator = observer(function AppNavigator(props: NavigationProp
       <AppStack />
     </NavigationContainer>
   )
-})
+}

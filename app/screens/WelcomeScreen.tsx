@@ -4,7 +4,7 @@ import { Image, ImageBackground, ImageStyle, StyleSheet, TextStyle, View, ViewSt
 import {Button,Text,} from "app/components"
 import { isRTL } from "../i18n"
 import { useStores } from "../models"
-import { AppStackScreenProps } from "../navigators"
+import { AppStackScreenProps, navigate } from "../navigators"
 import { colors, spacing } from "../theme"
 import { useHeader } from "../utils/useHeader"
 import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
@@ -43,6 +43,11 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   >
     <View style={styles.overlay}>
       <Text style={styles.text}>Comparte tu aventura!</Text>
+    <Button
+     text="Sign In"
+     style={styles.button}
+     onPress={() => navigate("Login")}
+    />
     </View>
   </ImageBackground>
   )
@@ -51,20 +56,29 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
-    justifyContent: 'center', // Opcional: Centra el contenido verticalmente
-    alignItems: 'center',
+    justifyContent: 'flex-end', 
+    paddingBottom:20// Opcional: Centra el contenido verticalmente
      // Opcional: Centra el contenido horizontalmente
   },
-  overlay: {
-    
+  _overlay: {
     justifyContent: 'center', // Opcional: Centra el contenido verticalmente
-    alignItems: 'center', 
-    alignSelf:'flex-end'
+    alignItems: 'center',
+    gap:20
+  },
+  get overlay() {
+    return this._overlay
+  },
+  set overlay(value) {
+    this._overlay = value
   },
   text: {
     color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
   },
+
+  button:{
+    width:100
+  }
 });
 

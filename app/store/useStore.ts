@@ -1,16 +1,23 @@
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
+import asyncStorageAdapter from './asyncStorageAdapter'
 
-export const useStore = create(
+interface UseStoreState  {
+   session:object | null
+   setSession: (newSession:object) => void 
+   setRemoveSession: () => void
+}
+
+export const useStore = create<UseStoreState>()(
   persist(
     (set, get) => ({
-      session: null,
+      session: {},
       setSession: (newSession:any) => set({ session: newSession }),
-      setRemoveSession:() => set({session:""})
+      setRemoveSession:() => set({session:null})
     }),
     {
       name: 'values-storage',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: asyncStorageAdapter,
     },
   ),
 )

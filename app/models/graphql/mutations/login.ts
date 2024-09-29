@@ -12,7 +12,7 @@ const useLogin = () => {
   const email = emailVar()
   const password = passwordVar()
   const { setSession } = useStore()
-
+  
   return useMutation(LOGIN, {
     variables: {
       email,
@@ -21,6 +21,9 @@ const useLogin = () => {
     onCompleted: (data) => {
      setSession(data.Login)
     },
+    onError: (error) => {
+      console.log("Error!",error)
+    }
   })
 }
 
