@@ -1,24 +1,24 @@
 import React, { FC, useEffect, useRef } from "react"
-import { TextInput, TextStyle, ViewStyle } from "react-native"
+import { TextStyle, ViewStyle } from "react-native"
 import { Button, Screen, Text, TextField } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
 import { useReactiveVar } from "@apollo/client"
 import { emailVar, passwordVar } from "app/store/reactiveVars"
-import useLogin from "app/models/graphql/mutations/login"
+import { oauth } from "app/services/api/oauth"
+import { useStore } from "app/store/useStore"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
 export const LoginScreen: FC<LoginScreenProps> = function LoginScreen(_props) {
-  //const authPasswordInput = useRef<TextInput>(null)
-
+  const { setSession } = useStore()
   const email = useReactiveVar(emailVar)
   const password = useReactiveVar(passwordVar)
-  const [setLogin] = useLogin()
- 
-  function login() {
+
+  const login = async () => {
     try {
-      setLogin()
+      const sessionUser = await oauth({ userNameOrEmail: email, password })
+      setSession(sessionUser?.session)
     } catch (error) {
       console.error("UPSSSS Error", error)
     }
@@ -45,11 +45,11 @@ export const LoginScreen: FC<LoginScreenProps> = function LoginScreen(_props) {
         placeholderTx="loginScreen.emailFieldPlaceholder"
         // helper={error}
         //status={error ? "error" : undefined}
-        onSubmitEditing={() => authPasswordInput.current?.focus()}
+        // onSubmitEditing={() => authPasswordInput.current?.focus()}
       />
 
       <TextField
-       // ref={authPasswordInput}
+        // ref={authPasswordInput}
         value={password}
         onChangeText={(content) => passwordVar(content)}
         containerStyle={$textField}
@@ -59,7 +59,6 @@ export const LoginScreen: FC<LoginScreenProps> = function LoginScreen(_props) {
         secureTextEntry={true}
         labelTx="loginScreen.passwordFieldLabel"
         placeholderTx="loginScreen.passwordFieldPlaceholder"
-        onSubmitEditing={login}
         //RightAccessory={PasswordRightAccessory}
       />
 
@@ -99,4 +98,3 @@ const $textField: ViewStyle = {
 const $tapButton: ViewStyle = {
   marginTop: spacing.xs,
 }
-

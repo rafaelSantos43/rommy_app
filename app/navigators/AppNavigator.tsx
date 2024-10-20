@@ -16,7 +16,6 @@ import React from "react"
 import { useColorScheme } from "react-native"
 import * as Screens from "app/screens"
 import Config from "../config"
-import { useStores } from "../models" // @demo remove-current-line
 import { TabNavigator, TabParamList } from "./TabNavigator" // @demo remove-current-line
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { colors } from "app/theme"
@@ -35,18 +34,16 @@ import { useStore } from "app/store/useStore"
  *   https://reactnavigation.org/docs/typescript#type-checking-the-navigator
  *   https://reactnavigation.org/docs/typescript/#organizing-types
  */
+
+
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined // @demo remove-current-line
-  TabNavigator: NavigatorScreenParams<TabParamList> // @demo remove-current-line
-  // 🔥 Your screens go here
-  // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
+  TabNavigator: {userSession:object} // @demo remove-current-line
 }
 
-/**
- * This is a list of all the route names that will exit the app if the back button
- * is pressed while in that screen. Only affects Android.
- */
+
+
 const exitRoutes = Config.exitRoutes
 
 export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStackScreenProps<
@@ -57,7 +54,8 @@ const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = observer(function AppStack() {
   const { session } = useStore()
-
+     console.log(session?.token);
+     
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, navigationBarColor: colors.background }}
@@ -65,7 +63,7 @@ const AppStack = observer(function AppStack() {
     >
       {session ? (
         <>
-          <Stack.Screen name="TabNavigator" component={TabNavigator} />
+          <Stack.Screen name="TabNavigator" component={TabNavigator} initialParams={{userSession: session}} />
         </>
       ) : (
         <>

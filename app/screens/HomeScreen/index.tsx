@@ -10,6 +10,7 @@ import {
   ImageSourcePropType,
   ImageStyle,
   Platform,
+  Pressable,
   StyleSheet,
   TextStyle,
   View,
@@ -24,6 +25,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated"
 import {
+  AutoImage,
   Button,
   ButtonAccessoryProps,
   Card,
@@ -34,26 +36,35 @@ import {
   Text,
   TextField,
   Toggle,
-} from "../components"
-import { isRTL, translate } from "../i18n"
-import { useStores } from "../models"
-import { Episode } from "../models/Episode"
-import { TabScreenProps } from "../navigators/TabNavigator"
-import { colors, spacing } from "../theme"
-import { delay } from "../utils/delay"
-import { openLinkInBrowser } from "../utils/openLinkInBrowser"
+} from "../../components"
+import { isRTL, translate } from "../../i18n"
+import { useStores } from "../../models"
+import { Episode } from "../../models/Episode"
+import { TabScreenProps } from "../../navigators/TabNavigator"
+import { colors, spacing } from "../../theme"
+import { delay } from "../../utils/delay"
+import { openLinkInBrowser } from "../../utils/openLinkInBrowser"
 
 const ICON_SIZE = 30
-
-const rnrImage1 = require("../../assets/images/demo/rnr-image-1.png")
-const rnrImage2 = require("../../assets/images/demo/rnr-image-2.png")
-const rnrImage3 = require("../../assets/images/demo/rnr-image-3.png")
-const rnrImages = [rnrImage1, rnrImage2, rnrImage3]
-
+const height = Dimensions.get("screen").height
 const width = Dimensions.get("screen").width
+console.log(height, "------")
 
+// const rnrImage1 = require("../../assets/images/demo/rnr-image-1.png")
+// const rnrImage2 = require("../../assets/images/demo/rnr-image-2.png")
+// const rnrImage3 = require("../../assets/images/demo/rnr-image-3.png")
+// const rnrImages = [rnrImage1, rnrImage2, rnrImage3]
+
+const imageFake = "https://th.bing.com/th/id/OIP.XrT5xQxuU-eJr5gadwIkfAHaIk?rs=1&pid=ImgDetMain"
+const textFake =
+  "El componente de Ignite es una versión mejorada del componente integrado de React Native Text. Agrega internacionalización y varios ajustes preestablecidos de propiedades útiles (y personalizables). No deberías necesitar el componente integrado de React Native Text si lo utilizas. Hace todo lo que hace el incorporado y más.TextAl mejorar el componente Ignite Text y usarlo en toda la aplicación, puede asegurarse de que las fuentes, el peso de la fuente y otros estilos y comportamientos correctos se compartan en toda la aplicación."
 import { useStore } from "app/store/useStore"
 import usePosts from "app/models/graphql/querys/posts"
+import PostCard from "app/screens/HomeScreen/components/PostCard"
+import { navigate } from "app/navigators"
+import CommentModal from "./components/CommentContentModal"
+import CommonModal from "app/components/CommonModal"
+import CommentContentModal from "./components/CommentContentModal"
 
 const logo = require("../../../assets/images/logo.png")
 
@@ -63,51 +74,30 @@ export interface Demo {
   data: ReactElement[]
 }
 
-export const HomeShowroomScreen: FC<TabScreenProps<"HomeShowroomScreen">> =
-  function HomeShowroomScreen(_props) {
-    const { setRemoveSession } = useStore()
-    const [refreshing, setRefreshing] = React.useState(false)
-    //const [isLoading, setIsLoading] = React.useState(false)
-    const { data } = usePosts()
-   
-    return (
+export const HomeScreen: FC<TabScreenProps<"HomeScreen">> = function HomeScreen({route}) {
+  const [refreshing, setRefreshing] = React.useState(false)
+  const {_id:userId} = route.params.userSession
+
+  //const [isLoading, setIsLoading] = React.useState(false)
+  const {data} = usePosts()
+
+  return (
+    <>
       <Screen style={$screenContainer} preset="fixed">
         <FlatList
           data={data?.GetPosts}
           keyExtractor={(post) => post.id}
-          renderItem={({ item: post }) => (
-            <>
-              <Card
-                style={$item}
-                verticalAlignment="force-footer-bottom"
-                content={post.title}
-                //{...accessibilityHintProps}
-                LeftComponent={
-                  <View style={$contentAvatar}>
-                    <Text style={$nameText} text={post.author.name} />
-                    <Text style={{color:'black'}} text={post.content} />
-                  </View>
-                }
-                FooterComponent={
-                  <View>
-                    <View>
-                      <Icon
-                        icon="heart"
-                        size={ICON_SIZE}
-                        color={colors.palette.neutral800} // dark grey
-                      />
-                    </View>
-                  </View>
-                }
-              />
-            </>
-          )}
+          renderItem={({ item: post }) => <PostCard post={post} />}
         />
       </Screen>
-    )
-  }
+      <CommonModal>
+        <CommentContentModal userId={userId}/>
+      </CommonModal>
+    </>
+  )
+}
 
-const PostCard = function PostCard({
+const PostCards = function PostCard({
   post,
   isFavorite,
   onPressFavorite,
@@ -218,43 +208,26 @@ const PostCard = function PostCard({
       style={$item}
       verticalAlignment="force-footer-bottom"
       //onPress={handlePressCard}
-      onLongPress={handlePressFavorite}
-      // HeadingComponent={
-      //   <View style={$metadata}>
-      //     <Text
-      //       //style={$metadataText}
-      //       size="xxs"
-      //       accessibilityLabel={post.description}
-      //     >
-      //       {/* {episode.datePublished.textLabel} */}
-      //     </Text>
-      //     <Text
-      //       style={$metadataText}
-      //       size="xxs"
-      //       // accessibilityLabel={episode.duration.accessibilityLabel}
-      //     >
-      //       {/* {episode.duration.textLabel} */}
-      //     </Text>
-      //   </View>
-      // }
-      content={post.title}
+      //onLongPress={handlePressFavorite}
+      HeadingComponent={<Text style={$nameText} text={post.author.name} />}
+      content={textFake}
+      contentStyle={{
+        padding: 8,
+        borderRadius: 6,
+      }}
       //{...accessibilityHintProps}
       LeftComponent={
         <View style={$contentAvatar}>
-          <Image source={imageUri} style={$itemThumbnail} />
-          <Text style={$nameText} text={post.author.name} />
-          <Text text={post.description} />
+          <AutoImage
+            source={{ uri: imageFake }}
+            style={{ width: 50, height: 50, borderRadius: 50 }}
+          />
         </View>
       }
       FooterComponent={
-        <View>
-          <View>
-            <Icon
-              icon="heart"
-              size={ICON_SIZE}
-              color={colors.palette.neutral800} // dark grey
-            />
-          </View>
+        <View style={{ flexDirection: "row", gap: 10, alignSelf: "flex-end" }}>
+          <Icon icon="heart" size={ICON_SIZE} color={colors.palette.neutral800} />
+          <Text>[CM]</Text>
         </View>
       }
     />
@@ -263,30 +236,28 @@ const PostCard = function PostCard({
 
 const $screenContainer: ViewStyle = {
   flex: 1,
+  paddingHorizontal: 15,
 }
 
 const $item: ViewStyle = {
-  flex:1,
+  flex: 1,
   //padding: spacing.md,
   borderRadius: 0,
   //marginTop: spacing.md,
   minHeight: 150,
-  padding: 0,
-  marginVertical: 10,
-  // height: 500,
+  //padding: 0,
+  marginBottom: 30,
+
   width: width,
+  height: height * 0.795,
 }
 
 const $contentAvatar: ViewStyle = {
-  flexDirection: "row",
-  borderWidth: 1,
-  height: 55,
-  alignItems: "center",
-  justifyContent: "space-between",
-  width: "100%",
+  // borderWidth: 1,
 }
 
 const $itemThumbnail: ImageStyle = {
+  // backgroundColor:'red'
   //marginTop: spacing.sm,
   // borderRadius: 50,
   // alignSelf: "flex-start",
@@ -300,7 +271,7 @@ const $iconContainer: ViewStyle = {
 }
 
 const $nameText: ViewStyle = {
-  left: -90,
+  // left: -90,
 }
 
 const $metadata: TextStyle = {
@@ -310,7 +281,8 @@ const $metadata: TextStyle = {
 }
 
 const $metadataText: TextStyle = {
-  color: colors.textDim,
+  // color: colors.textDim,
+  backgroundColor: "red",
   // marginEnd: spacing.md,
   //marginBottom: spacing.xs,
 }

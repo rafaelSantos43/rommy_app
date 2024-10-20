@@ -31,6 +31,8 @@ import { customFontsToLoad } from "./theme"
 import Config from "./config"
 import { ApolloProvider } from "@apollo/client"
 import apolloConfig from "./services/api/apolloConfig"
+import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev"
+
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -64,7 +66,9 @@ interface AppProps {
  * @param {AppProps} props - The props for the `App` component.
  * @returns {JSX.Element} The rendered `App` component.
  */
+
 function App(props: AppProps) {
+  const client = apolloConfig()
   const { hideSplashScreen } = props
   const {
     initialNavigationState,
@@ -99,7 +103,13 @@ function App(props: AppProps) {
     config,
   }
 
-  const client = apolloConfig()
+  if (__DEV__) {
+    // Adds messages only in a dev environment
+    loadDevMessages();
+    loadErrorMessages();
+  }
+
+
   // otherwise, we're ready to render the app
   return (
     <ApolloProvider client={client}>

@@ -58,7 +58,7 @@ export const SettingScreen: FC<TabScreenProps<"Settings">> = function SettingScr
         />
       </View>
       <View style={$buttonContainer}>
-        <Button style={$button} tx="common.logOut" onPress={() => setRemoveSession(null)} />
+        <Button style={$button} tx="common.logOut" onPress={() => setRemoveSession()} />
       </View>
     </Screen>
   )

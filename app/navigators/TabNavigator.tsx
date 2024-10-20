@@ -5,16 +5,20 @@ import { TextStyle, View, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "../i18n"
-import { DemoCommunityScreen, HomeShowroomScreen, SettingScreen } from "../screens"
 import * as Screens from "app/screens"
-import { colors, spacing, typography } from "../theme"
+import { colors} from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
+import ImageValidateType from "app/components/ImageValidateType"
+import { LoaderPinwheel, SquarePen } from "lucide-react-native"
+import { navigate } from "./navigationUtilities"
+
 
 export type TabParamList = {
   DemoCommunity: undefined
-  HomeShowroomScreen: { queryIndex?: string; itemIndex?: string }
-  Settings: undefined
+  HomeScreen: {userSession:object}
+  Settings: {userSession:object}
   SearchFrinedScreen: undefined
+  CreatePostFormScreen: {userSession:object}
 }
 
 /**
@@ -36,8 +40,9 @@ const Tab = createBottomTabNavigator<TabParamList>()
  * More info: https://reactnavigation.org/docs/bottom-tab-navigator/
  * @returns {JSX.Element} The rendered `DemoNavigator`.
  */
-export function TabNavigator() {
+export function TabNavigator({route}) {
   const { bottom } = useSafeAreaInsets()
+  const {userSession} = route?.params  
 
   return (
     <Tab.Navigator
@@ -52,8 +57,9 @@ export function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name="HomeShowroomScreen"
-        component={Screens.HomeShowroomScreen}
+        name="HomeScreen"
+        component={Screens.HomeScreen}
+        initialParams={{userSession}}
         options={{
           title: "Roomy",
           headerTitleAlign: "center",
@@ -66,7 +72,7 @@ export function TabNavigator() {
           ),
           headerRight: () => (
             <View style={{ paddingHorizontal: 10 }}>
-              <Icon icon="more" color={colors.tint} size={30} />
+              <ImageValidateType width={30} height={30} radius={50} />
             </View>
           ),
           tabBarIcon: ({ focused }) => (
@@ -88,6 +94,18 @@ export function TabNavigator() {
       />
 
       <Tab.Screen
+        name="CreatePostFormScreen"
+        component={Screens.CreatePostFormScreen}
+        initialParams={{userSession}}
+        options={{
+          tabBarLabel: translate("demoNavigator.debugTab"),
+          tabBarIcon: ({ focused }) => (
+            <LoaderPinwheel size={50} color={focused ? colors.tint : "black"} onPress={() => navigate("CreatePostFormScreen")}/>
+          ),
+        }}
+      />
+
+      <Tab.Screen
         name="DemoCommunity"
         component={Screens.DemoCommunityScreen}
         options={{
@@ -101,6 +119,7 @@ export function TabNavigator() {
       <Tab.Screen
         name="Settings"
         component={Screens.SettingScreen}
+        initialParams={{userSession}}
         options={{
           tabBarLabel: translate("demoNavigator.debugTab"),
           tabBarIcon: ({ focused }) => (
