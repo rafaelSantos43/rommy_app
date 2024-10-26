@@ -7,10 +7,12 @@ const width = Dimensions.get("screen").width
 const height = Dimensions.get("screen").height
 
 const ContentForImage = (props: any) => {
-  const {image} = props
+  const {post} = props
+  const imageContent = post?.imageUrl
+  
   return (
       <View style={$contentCenter}>
-        <ImageValidateType image={image} width={'100%'} height={'100%'} radius={20}/>
+        <ImageValidateType image={imageContent} width={'100%'} height={'100%'} radius={20}/>
       </View>
   )
 }

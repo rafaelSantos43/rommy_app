@@ -39,15 +39,15 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function Crea
     let image = ""
     //setIsLoading(true)
     try {
-      if(selectedImage) image = await handleimageUpload(selectedImage)
-       
+      if (selectedImage) image = await handleimageUpload(selectedImage)
+
       await createPost({
         variables: {
           filter: {
             title: contentTitle,
             content: contentDescription,
             author: userId,
-            imageUrl: image || ""
+            imageUrl: image || "",
           },
         },
 
@@ -67,6 +67,8 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function Crea
               name: name,
               avatar: "",
             },
+            likes: [],
+            likeCount: 0,
             comments: [],
           },
         },
@@ -99,6 +101,8 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function Crea
                       name: name,
                       avatar: "",
                     },
+                    likes: [],
+                    likeCount: 0,
                     comments: [],
                   },
                   ...existingPosts?.GetPosts,
@@ -114,7 +118,6 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function Crea
             setContentDescription("")
             setSelectedImage("")
             navigate("HomeScreen")
-
           }
         },
       })
@@ -155,11 +158,13 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function Crea
       </View>
 
       <View style={$containerButton}>
-        <TouchableOpacity onPress={ async () => {
-          setIspermision(true)
-          const image = await launchImageLibrary()
-           setSelectedImage(image)
-          }}>
+        <TouchableOpacity
+          onPress={async () => {
+            setIspermision(true)
+            const image = await launchImageLibrary()
+            setSelectedImage(image)
+          }}
+        >
           <ImageUp size={50} color={"black"} />
         </TouchableOpacity>
         <Button text="Create" onPress={handleCreatePost} />

@@ -2,11 +2,15 @@ import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client"
 import { setContext } from "@apollo/client/link/context"
 import { useStore } from "app/store/useStore"
 
+const arra = [1]
+
+console.log(arra.slice(0,0))
+
 const useApolloConfig = () => {
   const {session} = useStore()
-  
+
   const httpLink = createHttpLink({
-    uri: "http://192.168.1.7:4000/graphql"
+    uri: "http://192.168.1.4:4000/graphql"
   })
   const authLink = setContext((_, { headers }) => {
     return {

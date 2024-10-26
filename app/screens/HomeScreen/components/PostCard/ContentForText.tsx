@@ -2,7 +2,9 @@ import { View, ViewStyle } from "react-native"
 import { Text } from "../../../../components/Text"
 
 const ContentForText = (props: any) => {
-  const { title = 'my post', content = "content", } = props
+  const {post } = props
+  const title = post?.title
+  const content = post?.content
   return (
     <View style={$contentCenter}>
       <Text>{title}</Text>

@@ -14,6 +14,9 @@ export const POSTS = gql`
         name
         avatar
       }
+    commentCount
+    likeCount
+    likes
     }
   }
 `

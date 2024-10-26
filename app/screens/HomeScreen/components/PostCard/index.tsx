@@ -11,8 +11,7 @@ const PostCard = (props: any) => {
  
   const imageContent = post?.imageUrl
   const nameAuthor = post?.author?.name 
-  const title = post?.title
-  const content = post?.content
+  
 
   return (
     <View style={$container}>
@@ -25,11 +24,11 @@ const PostCard = (props: any) => {
       </View>
 
       {imageContent ? (
-        <ContentForImage image={imageContent} />
+        <ContentForImage  post={post} />
       ) : (
-        <ContentForText title={title} content={content} />
+        <ContentForText post={post}/>
       )}
-      <ContentFooter postId={post.id}/>
+      <ContentFooter post={post}/>
     </View>
   )
 }
