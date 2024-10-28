@@ -1,5 +1,6 @@
+import { Text } from "app/components"
 import { View, ViewStyle } from "react-native"
-import { Text } from "../../../../components/Text"
+
 
 const ContentForText = (props: any) => {
   const {post } = props

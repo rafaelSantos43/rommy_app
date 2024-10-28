@@ -1,26 +1,28 @@
 import React, { FC, useEffect, useState } from "react"
+import { useMutation } from "@apollo/client"
 import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
-import { Button, Screen, Text, TextField } from "../components"
-import { TabScreenProps } from "../navigators/TabNavigator"
-import { spacing } from "../theme"
-import useCreatePost from "app/models/graphql/mutations/create_Post"
-import { POSTS } from "app/models/graphql/querys/posts"
-import { navigate } from "app/navigators"
 import { ImageUp } from "lucide-react-native"
+
+import { spacing } from "app/theme"
+import { navigate } from "app/navigators"
+
+import { CREATE_POST } from "app/modules/posts/CreatePostFormScreen/graphql/create_Post.mutation"
+import { POSTS } from "app/modules/posts/HomeScreen/graphql/posts.query"
+
 import { getLibraryPermision, launchImageLibrary } from "app/utils/getPermisionFile"
 import { handleimageUpload } from "app/services/api/uploadApi"
+import { TabScreenProps } from "app/navigators/TabNavigator"
+import { Button, Screen, Text, TextField } from "app/components"
+import { Post } from "./interface/Post"
 
 interface CreatePostFormScreenProps extends TabScreenProps<"CreatePostFormScreen"> {}
 
-interface Post {
-  createdAt: string
-}
 
-export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function CreatePostFormScreen({
-  route,
-}) {
+
+export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) => {
   const { _id: userId, name } = route.params.userSession
-  const [createPost] = useCreatePost()
+
+  const [createPost] = useMutation(CREATE_POST)
 
   const idFake = Math.random().toString(36).substr(2, 9)
 
@@ -35,6 +37,52 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function Crea
     }
   }, [ispermision])
   // const isButtonDisabled = !contentTitle || !contentDescription || isLoading
+
+  const buildNewPost = (CreatePost: Post) => ({
+    __typename: "Post",
+    id: CreatePost.id,
+    title: CreatePost.title,
+    content: CreatePost.content,
+    imageUrl: CreatePost.imageUrl || "",
+    commentCount: 0,
+    createdAt: CreatePost.createdAt,
+    updatedAt: CreatePost.updatedAt,
+    author: {
+      __typename: "User",
+      id: userId,
+      name: name,
+      avatar: "",
+    },
+    likes: [],
+    likeCount: 0,
+    comments: [],
+  })
+
+  const updateCache = (cache: any, CreatePost: Post) => {
+    try {
+      const existingPosts = cache.readQuery({ query: POSTS })
+
+      if (!existingPosts) {
+        console.error("No se encontraron publicaciones existentes en la caché")
+        return
+      }
+      const newPost = buildNewPost(CreatePost)
+
+      cache.writeQuery({
+        query: POSTS,
+        data: {
+          GetPosts: [
+            newPost,
+            ...existingPosts?.GetPosts].sort(
+              (a: Post, b: Post) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+            ),
+        },
+      })
+    } catch (error) {
+      throw new Error(`Error al escribir el post en el cache: ${error}`)
+    }
+  }
+
   const handleCreatePost = async () => {
     let image = ""
     //setIsLoading(true)
@@ -46,7 +94,6 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function Crea
           filter: {
             title: contentTitle,
             content: contentDescription,
-            author: userId,
             imageUrl: image || "",
           },
         },
@@ -75,44 +122,8 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function Crea
 
         update(cache, { data: { CreatePost } }) {
           if (CreatePost) {
-            const existingPosts = cache.readQuery({ query: POSTS })
 
-            if (!existingPosts) {
-              console.error("No se encontraron publicaciones existentes en la caché")
-              return
-            }
-
-            cache.writeQuery({
-              query: POSTS,
-              data: {
-                GetPosts: [
-                  {
-                    __typename: "Post",
-                    id: CreatePost.id,
-                    title: CreatePost.title,
-                    content: CreatePost.content,
-                    imageUrl: CreatePost.imageUrl || "",
-                    commentCount: 0,
-                    createdAt: CreatePost.createdAt,
-                    updatedAt: CreatePost.updatedAt,
-                    author: {
-                      __typename: "User",
-                      id: userId,
-                      name: name,
-                      avatar: "",
-                    },
-                    likes: [],
-                    likeCount: 0,
-                    comments: [],
-                  },
-                  ...existingPosts?.GetPosts,
-                ].sort(
-                  (a: Post, b: Post) =>
-                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-                ),
-              },
-            })
-
+            updateCache(cache,CreatePost)
             //setIsLoading(false)
             setContentTitle("")
             setContentDescription("")

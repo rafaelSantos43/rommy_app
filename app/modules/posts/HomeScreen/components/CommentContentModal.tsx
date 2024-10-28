@@ -1,82 +1,107 @@
-import React, { useEffect, useRef, useState } from "react"
-import { useReactiveVar } from "@apollo/client"
-import useComments, { COMMENTS } from "app/models/graphql/querys/comment/comments"
-import { openModalVar, postIdVar } from "app/store/reactiveVars"
+import React, { useRef, useState } from "react"
+import { useQuery, useReactiveVar } from "@apollo/client"
+import { COMMENTS } from "app/modules/posts/HomeScreen/graphql/comments.query"
+import { openModalVar } from "app/store/reactiveVars"
 import { SendHorizontal, X } from "lucide-react-native"
 import { StyleSheet, Pressable, View, FlatList } from "react-native"
-import CommentCard from "./CommentCard"
+
 import { Text, TextField } from "app/components"
-import useCreateComments from "app/models/graphql/mutations/create_commets"
+import useCreateComments from "app/modules/posts/HomeScreen/graphql/create_commet.mutation"
+import CommentCard from "./CommentCard"
+import { COMMENTS_COUNT } from "../graphql/Comments_count.query"
+import { POSTS } from "../graphql/posts.query"
 
-const CommentContentModal = ({ userId }) => {
-  const [ getComments,{ data, loading, error }] = useComments()
+const CommentContentModal = ({ userId, postId }) => {
   const [content, setContent] = useState("")
-
-
-  
+ 
+  const { data, loading, error } = useQuery(COMMENTS,{
+    variables: {
+      postId,
+    },
+  })
+    
   const [createComment] = useCreateComments()
   const modalVisible = useReactiveVar(openModalVar)
-  const postId = useReactiveVar(postIdVar)
   const flatListRef = useRef(null)
-  const ITEM_HEIGHT = 100;
+  const ITEM_HEIGHT = 100
 
-
-  useEffect(() => {
-    if (modalVisible) {
-      getComments({
-          variables: {
-            postId,
-          },
-      })
+  const buildComment = (CreateComment: Comment) => (
+    {
+      __typename: "Comment",
+      id: CreateComment.id,
+      content: CreateComment.content,
+      postId,
+      author: {
+        __typename: "User",
+        id: userId,
+        name: "",
+        avatar: "",
+      },
+      createdAt: CreateComment.createdAt,
+      updatedAt: CreateComment.updatedAt,
     }
-  }, [modalVisible, postId, getComments])
+  )
+
+  const updateCommentsCount = (cache:any) => {
+    try {
+    const modifiy =  cache.modify({
+        id: cache.identify({id: postId, __typename:'Post'}),
+        fields: {
+          commentCount(existingCount:number){
+            return existingCount + 1;
+          }  
+        }
+      })
+     console.log('siiii muy bien', modifiy);
+     
+    } catch (error) {
+      throw new Error(`Error al escribir la cuenta de comentarios ${error}`)
+    }
+  }
+
+  const updateCommentsInCache = (cache:any, CreateComment: Comment ) => {
+    try {
+      const existingComments = cache.readQuery({
+        query: COMMENTS,
+        variables: {
+          postId,
+        },
+      })
+
+      if (!existingComments) {
+        console.error("No se encontraron publicaciones existentes en la caché")
+        return <Text>Error al cargar comentarios</Text>;
+      }
+
+      const newComment = buildComment(CreateComment)
+
+    const dataIncache =  cache.writeQuery({
+        query: COMMENTS,
+        variables: { postId },
+        data: {
+          GetComments: [...existingComments?.GetComments, newComment],
+        },
+      })
+     return dataIncache
+    } catch (error) {
+      throw new Error(`Error al crear el comentario ${error}`)
+    }
+  }
 
   const handleCreateComments = async () => {
     try {
       await createComment({
         variables: {
-          input: {
+          filter: {
             postId,
             content,
-            authorId: userId,
+
           },
         },
         update(cache, { data: { CreateComment } }) {
           if (CreateComment) {
-            const existingComments = cache.readQuery({
-              query: COMMENTS,
-              variables: {
-                postId,
-              },
-            })
-
-            if (!existingComments) {
-              console.error("No se encontraron publicaciones existentes en la caché")
-              return <Text>Error al cargar comentarios</Text>;
-            }
-
-            const newComment = {
-              __typename: "Comment",
-              id: CreateComment.id,
-              content: CreateComment.content,
-              postId,
-              author: {
-                __typename: "User",
-                id: userId,
-                name: "",
-                avatar: "",
-              },
-              createdAt: CreateComment.createdAt,
-              updatedAt: CreateComment.updatedAt,
-            }
-
-            cache.writeQuery({
-              query: COMMENTS,
-              variables: { postId },
-              data: {
-                GetComments: [...existingComments?.GetComments, newComment],
-              },
-            })
+           const responseInCache = updateCommentsInCache(cache, CreateComment)
+           if(responseInCache.__ref) updateCommentsCount(cache)
           }
         },
 

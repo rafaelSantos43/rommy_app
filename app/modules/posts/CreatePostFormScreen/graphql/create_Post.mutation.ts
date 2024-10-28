@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 
-const CREATE_POST = gql`
+export const CREATE_POST = gql`
 mutation CreatePost($filter: postCreate!) {
   CreatePost(filter: $filter) {
       id
@@ -15,11 +15,4 @@ mutation CreatePost($filter: postCreate!) {
     }
   }
 }
-
 `
-
-const useCreatePost = () => {
-   return useMutation(CREATE_POST) 
-}
-
-export default useCreatePost

@@ -1,6 +1,6 @@
 import { type ContentStyle } from "@shopify/flash-list"
 
-import React, { ComponentType, FC, useEffect, useMemo, ReactElement } from "react"
+import React, { ComponentType, FC, useEffect, useMemo, ReactElement, useState } from "react"
 import {
   AccessibilityProps,
   ActivityIndicator,
@@ -36,14 +36,14 @@ import {
   Text,
   TextField,
   Toggle,
-} from "../../components"
-import { isRTL, translate } from "../../i18n"
-import { useStores } from "../../models"
-import { Episode } from "../../models/Episode"
-import { TabScreenProps } from "../../navigators/TabNavigator"
-import { colors, spacing } from "../../theme"
-import { delay } from "../../utils/delay"
-import { openLinkInBrowser } from "../../utils/openLinkInBrowser"
+} from "../../../components"
+import { isRTL, translate } from "../../../i18n"
+import { useStores } from "../../../models"
+import { Episode } from "../../../models/Episode"
+import { TabScreenProps } from "../../../navigators/TabNavigator"
+import { colors, spacing } from "../../../theme"
+import { delay } from "../../../utils/delay"
+import { openLinkInBrowser } from "app/utils/openLinkInBrowser"
 
 const ICON_SIZE = 30
 const height = Dimensions.get("screen").height
@@ -59,12 +59,13 @@ const imageFake = "https://th.bing.com/th/id/OIP.XrT5xQxuU-eJr5gadwIkfAHaIk?rs=1
 const textFake =
   "El componente de Ignite es una versión mejorada del componente integrado de React Native Text. Agrega internacionalización y varios ajustes preestablecidos de propiedades útiles (y personalizables). No deberías necesitar el componente integrado de React Native Text si lo utilizas. Hace todo lo que hace el incorporado y más.TextAl mejorar el componente Ignite Text y usarlo en toda la aplicación, puede asegurarse de que las fuentes, el peso de la fuente y otros estilos y comportamientos correctos se compartan en toda la aplicación."
 import { useStore } from "app/store/useStore"
-import usePosts from "app/models/graphql/querys/posts"
-import PostCard from "app/screens/HomeScreen/components/PostCard"
+import { POSTS } from "app/modules/posts/HomeScreen/graphql/posts.query"
+import PostCard from "app/modules/posts/HomeScreen/components/PostCard"
 import { navigate } from "app/navigators"
-import CommentModal from "./components/CommentContentModal"
 import CommonModal from "app/components/CommonModal"
 import CommentContentModal from "./components/CommentContentModal"
+import { useQuery } from "@apollo/client"
+
 
 const logo = require("../../../assets/images/logo.png")
 
@@ -77,9 +78,10 @@ export interface Demo {
 export const HomeScreen: FC<TabScreenProps<"HomeScreen">> = function HomeScreen({route}) {
   const [refreshing, setRefreshing] = React.useState(false)
   const {_id:userId} = route.params.userSession
-
+  const [postId, setPostId] = useState("")
+ 
   //const [isLoading, setIsLoading] = React.useState(false)
-  const {data} = usePosts()
+  const {data} = useQuery(POSTS)
 
   return (
     <>
@@ -87,11 +89,11 @@ export const HomeScreen: FC<TabScreenProps<"HomeScreen">> = function HomeScreen(
         <FlatList
           data={data?.GetPosts}
           keyExtractor={(post) => post.id}
-          renderItem={({ item: post }) => <PostCard post={post} />}
+          renderItem={({ item: post }) => <PostCard post={post} setPostId={setPostId} postId={postId}/>}
         />
       </Screen>
       <CommonModal>
-        <CommentContentModal userId={userId}/>
+        <CommentContentModal userId={userId} postId={postId}/>
       </CommonModal>
     </>
   )

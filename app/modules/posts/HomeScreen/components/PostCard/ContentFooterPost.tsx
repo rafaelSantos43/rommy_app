@@ -1,27 +1,38 @@
-import { Icon, Text } from "app/components"
-import { Pressable, TouchableOpacity, View, ViewStyle } from "react-native"
+import { TouchableOpacity, View, ViewStyle } from "react-native"
 import { BookmarkPlus, MessageCircle, Share } from "lucide-react-native"
-import { openModalVar, postIdVar } from "app/store/reactiveVars"
+import { useQuery } from "@apollo/client"
 
-const ContentFooterPost = ({post}:any) => {  
+import { openModalVar } from "app/store/reactiveVars"
+import { Icon, Text } from "app/components"
+import { COMMENTS_COUNT } from "../../graphql/Comments_count.query"
 
-   const postId = post.id
-   const likeCount = post.likeCount
-   const commentCount = post.commentCount
-  return ( 
+const ContentFooterPost = ({ post, setPostId, postId }: any) => {
+  const likeCount = post.likeCount
+
+  const { data, error } = useQuery(COMMENTS_COUNT, {
+    variables: {
+      postId,
+    },
+  })
+  const commentCount = data?.CommentsCount
+  console.log(commentCount,'siiii', postId);
+  
+  return (
     <>
       <View style={$container}>
         <View style={$contentLikes}>
           <Icon icon="heart" size={20} color="black" />
           <Text>{likeCount}</Text>
         </View>
-        <TouchableOpacity onPress={() =>{
-           openModalVar(true)
-           postIdVar(postId)
-          }} 
-           style={$contentComments}>
+        <TouchableOpacity
+          onPress={() => {
+            setPostId(post.id)
+            openModalVar(true)
+          }}
+          style={$contentComments}
+        >
           <MessageCircle size={20} color="black" />
-          <Text>{commentCount}</Text>
+          {!commentCount ? "" : <Text>{commentCount}</Text>}
         </TouchableOpacity>
         <View>
           <Share size={20} color="black" />
@@ -30,7 +41,6 @@ const ContentFooterPost = ({post}:any) => {
           <BookmarkPlus size={20} color="black" />
         </View>
       </View>
-
     </>
   )
 }

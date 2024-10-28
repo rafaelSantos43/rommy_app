@@ -1,11 +1,14 @@
 import React, { FC } from "react"
 import * as Application from "expo-application"
 import { Platform, TextStyle, View, ViewStyle } from "react-native"
-import { Button, ListItem, Screen, Text } from "../components"
-import { TabScreenProps } from "../navigators/TabNavigator"
-import { colors, spacing } from "../theme"
-import { isRTL } from "../i18n"
+
+
+
 import { useStore } from "app/store/useStore"
+import { TabScreenProps } from "app/navigators/TabNavigator"
+import { Button, ListItem, Screen, Text } from "app/components"
+import { colors, spacing } from "app/theme"
+import { isRTL } from "app/i18n"
 
 /**
  * @param {string} url - The URL to open in the browser.
