@@ -56,7 +56,7 @@ export const HomeScreen: FC<TabScreenProps<"HomeScreen">> = function HomeScreen(
           data={data?.GetPosts}
           keyExtractor={(post) => post.id}
           renderItem={({ item: post }) => (
-            <PostCard post={post} setPostId={setPostId}  />
+            <PostCard post={post} setPostId={setPostId} postId={postId} />
           )}
         />
       </Screen>

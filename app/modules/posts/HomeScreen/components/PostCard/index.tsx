@@ -8,8 +8,9 @@ import ContentFooter from "./ContentFooterPost"
 import ContentForText from "./ContentForText"
 
 
+
 const PostCard = (props: any) => {
-  const { post, setPostId} = props
+  const { post, setPostId, postId} = props
   const imageContent = post?.imageUrl
   const nameAuthor = post?.author?.name
 
@@ -28,7 +29,7 @@ const PostCard = (props: any) => {
       ) : (
         <ContentForText post={post}/>
       )}
-      <ContentFooter post={post} setPostId={setPostId}/>
+      <ContentFooter post={post} setPostId={setPostId} postId={postId}/>
     </View>
   )
 }

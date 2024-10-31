@@ -117,7 +117,7 @@ const CommentContentModal = ({ userId, postId }: any) => {
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: "flex-end" }}>
+    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
       <View style={styles.modalView}>
         <Pressable style={styles.buttonClose} onPress={() => openModalVar(!modalVisible)}>
           <X size={18} color={"white"} />
