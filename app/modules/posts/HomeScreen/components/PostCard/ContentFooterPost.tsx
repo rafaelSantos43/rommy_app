@@ -1,4 +1,5 @@
 import React from "react"
+import React from "react"
 import { TouchableOpacity, View, ViewStyle } from "react-native"
 import { BookmarkPlus, MessageCircle, Share } from "lucide-react-native"
 import { openModalVar } from "app/store/reactiveVars"

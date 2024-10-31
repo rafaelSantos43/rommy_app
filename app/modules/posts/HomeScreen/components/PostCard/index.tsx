@@ -29,7 +29,7 @@ const PostCard = (props: any) => {
       ) : (
         <ContentForText post={post}/>
       )}
-      <ContentFooter post={post} setPostId={setPostId} postId={postId}/>
+      <ContentFooter post={post} setPostId={setPostId}/>
     </View>
   )
 }

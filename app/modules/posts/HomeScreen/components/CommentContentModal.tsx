@@ -10,6 +10,7 @@ import useCreateComments from "app/modules/posts/HomeScreen/graphql/create_comme
 import CommentCard from "./CommentCard"
 
 const CommentContentModal = ({ userId, postId }: any) => {
+const CommentContentModal = ({ userId, postId }: any) => {
   const [content, setContent] = useState("")
 
   const { data } = useQuery(COMMENTS, {

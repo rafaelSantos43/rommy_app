@@ -12,6 +12,7 @@ import { TabScreenProps } from "app/navigators/TabNavigator"
 import { Button, Screen, Text, TextField } from "app/components"
 import { Post } from "./interface/Post"
 import { FRAGMENT_POST } from "../HomeScreen/graphql/posts.query"
+import { FRAGMENT_POST } from "../HomeScreen/graphql/posts.query"
 import ImageValidateType from "app/components/ImageValidateType"
 
 interface CreatePostFormScreenProps extends TabScreenProps<"CreatePostFormScreen"> {}
@@ -30,7 +31,7 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
 
   useEffect(() => {
     if (ispermision) {
-      getLibraryPermision() // Solicitar permisos al iniciar
+      getLibraryPermision() 
     }
   }, [ispermision])
   // const isButtonDisabled = !contentTitle || !contentDescription || isLoading
@@ -116,6 +117,10 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
           }
         },
       })
+      setContentTitle("")
+      setContentDescription("")
+      setSelectedImage("")
+      navigate("HomeScreen")
       setContentTitle("")
       setContentDescription("")
       setSelectedImage("")
