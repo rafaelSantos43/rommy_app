@@ -8,83 +8,71 @@ import { StyleSheet, Pressable, View, FlatList } from "react-native"
 import { Text, TextField } from "app/components"
 import useCreateComments from "app/modules/posts/HomeScreen/graphql/create_commet.mutation"
 import CommentCard from "./CommentCard"
-import { COMMENTS_COUNT } from "../graphql/Comments_count.query"
-import { POSTS } from "../graphql/posts.query"
 
-const CommentContentModal = ({ userId, postId }) => {
+const CommentContentModal = ({ userId, postId }: any) => {
   const [content, setContent] = useState("")
- 
-  const { data, loading, error } = useQuery(COMMENTS,{
+
+  const { data } = useQuery(COMMENTS, {
     variables: {
       postId,
     },
   })
-    
+
   const [createComment] = useCreateComments()
   const modalVisible = useReactiveVar(openModalVar)
   const flatListRef = useRef(null)
   const ITEM_HEIGHT = 100
 
-  const buildComment = (CreateComment: Comment) => (
-    {
-      __typename: "Comment",
-      id: CreateComment.id,
-      content: CreateComment.content,
-      postId,
-      author: {
-        __typename: "User",
-        id: userId,
-        name: "",
-        avatar: "",
-      },
-      createdAt: CreateComment.createdAt,
-      updatedAt: CreateComment.updatedAt,
-    }
-  )
-
-  const updateCommentsCount = (cache:any) => {
+  const updateCommentsInCache = (cache: any, CreateComment: Comment) => {
     try {
-    const modifiy =  cache.modify({
-        id: cache.identify({id: postId, __typename:'Post'}),
-        fields: {
-          commentCount(existingCount:number){
-            return existingCount + 1;
-          }  
-        }
-      })
-     console.log('siiii muy bien', modifiy);
-     
-    } catch (error) {
-      throw new Error(`Error al escribir la cuenta de comentarios ${error}`)
-    }
-  }
+      const newComment = {
+        __typename: "Comment",
+        id: CreateComment.id,
+        content: CreateComment.content,
+        postId,
+        author: {
+          __typename: "User",
+          id: userId,
+          name: "",
+          avatar: "",
+        },
+        createdAt: CreateComment.createdAt,
+        updatedAt: CreateComment.updatedAt,
+      }
 
-  const updateCommentsInCache = (cache:any, CreateComment: Comment ) => {
-    try {
       const existingComments = cache.readQuery({
         query: COMMENTS,
         variables: {
           postId,
         },
       })
-
       if (!existingComments) {
         console.error("No se encontraron publicaciones existentes en la caché")
-        return <Text>Error al cargar comentarios</Text>;
+        return <Text>Error al cargar comentarios</Text>
       }
 
-      const newComment = buildComment(CreateComment)
-
-    const dataIncache =  cache.writeQuery({
+      const dataIncache = cache.writeQuery({
         query: COMMENTS,
         variables: { postId },
         data: {
           GetComments: [...existingComments?.GetComments, newComment],
         },
       })
-     return dataIncache
+
+      if (dataIncache) {
+        cache.modify({
+          id: cache.identify({ __typename: "Post", id: postId }),
+          fields: {
+            commentCount(existingCommentCount = 0) {
+              return existingCommentCount + 1
+            },
+          },
+        })
+      }
+
+      return dataIncache
     } catch (error) {
-      throw new Error(`Error al crear el comentario ${error}`)
+      throw new Error(`Error al escribir la cuenta de comentarios ${error}`)
     }
   }
 
@@ -95,13 +83,11 @@ const CommentContentModal = ({ userId, postId }) => {
           filter: {
             postId,
             content,
-
           },
         },
         update(cache, { data: { CreateComment } }) {
           if (CreateComment) {
-           const responseInCache = updateCommentsInCache(cache, CreateComment)
-           if(responseInCache.__ref) updateCommentsCount(cache)
+            updateCommentsInCache(cache, CreateComment)
           }
         },
 
@@ -116,7 +102,7 @@ const CommentContentModal = ({ userId, postId }) => {
               __typename: "User",
               id: userId,
               name: "",
-              avatar: "", 
+              avatar: "",
             },
             createdAt: Date.now(),
             updatedAt: Date.now(),
@@ -131,45 +117,46 @@ const CommentContentModal = ({ userId, postId }) => {
   }
 
   return (
-      <View style={{ flex: 1, justifyContent: "flex-end" }}>
-        <View style={styles.modalView}>
-          <Pressable style={styles.buttonClose} onPress={() => openModalVar(!modalVisible)}>
-            <X size={18} color={"white"} />
-          </Pressable>
-          <FlatList
-            ref={flatListRef}
-            style={{ width: "100%", top: 10, marginBottom: 60 }}
-            data={data?.GetComments}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item: comment }) => <CommentCard comment={comment} />}
-            getItemLayout={(data, index) =>(
-              {length:ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }
-            )}
-            initialNumToRender={5}
+    <View style={{ flex: 1, justifyContent: "flex-end" }}>
+      <View style={styles.modalView}>
+        <Pressable style={styles.buttonClose} onPress={() => openModalVar(!modalVisible)}>
+          <X size={18} color={"white"} />
+        </Pressable>
+        <FlatList
+          ref={flatListRef}
+          style={{ width: "100%", top: 10, marginBottom: 60 }}
+          data={data?.GetComments}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item: comment }) => <CommentCard comment={comment} />}
+          getItemLayout={(data, index) => ({
+            length: ITEM_HEIGHT,
+            offset: ITEM_HEIGHT * index,
+            index,
+          })}
+          initialNumToRender={5}
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          position: "absolute",
+          backgroundColor: "white",
+        }}
+      >
+        <View style={{ width: "89.5%", padding: 6 }}>
+          <TextField
+            onChangeText={(text) => setContent(text)}
+            placeholder="escribe algo aqui..."
+            value={content}
           />
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            position: "absolute",
-            backgroundColor: "white",
-          }}
-        >
-          <View style={{ width: "89.5%", padding: 6 }}>
-            <TextField
-             onChangeText={(text) => setContent(text)}
-             placeholder="escribe algo aqui..." 
-             value={content}
-            />
-          </View>
-          <Pressable onPress={handleCreateComments}>
-            <SendHorizontal size={35} color={"black"} />
-          </Pressable>
-        </View>
+        <Pressable onPress={handleCreateComments}>
+          <SendHorizontal size={35} color={"black"} />
+        </Pressable>
       </View>
-
+    </View>
   )
 }
 

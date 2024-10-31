@@ -1,5 +1,22 @@
 import { gql } from "@apollo/client"
 
+export const FRAGMENT_POST = gql`
+  fragment NewPost on Post {
+    id
+    title
+    content
+    imageUrl
+    author {
+      id
+      name
+    }
+    commentCount
+    likeCount
+    createdAt
+    updatedAt
+  }
+`
+
 export const POSTS = gql`
   query GetPosts {
     GetPosts {
@@ -7,16 +24,15 @@ export const POSTS = gql`
       content
       title
       imageUrl
-      createdAt
-      updatedAt
       author {
         id
         name
         avatar
       }
-    commentCount
-    likeCount
-    likes
+      commentCount
+      likeCount
+      createdAt
+      updatedAt
     }
   }
 `

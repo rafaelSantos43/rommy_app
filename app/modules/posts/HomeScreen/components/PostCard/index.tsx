@@ -1,3 +1,4 @@
+import React from "react"
 import { View, ViewStyle } from "react-native"
 import ImageValidateType from "../../../../../components/ImageValidateType"
 import { Text } from "../../../../../components/Text"
@@ -6,11 +7,11 @@ import ContentForImage from "./ContentForImage"
 import ContentFooter from "./ContentFooterPost"
 import ContentForText from "./ContentForText"
 
+
 const PostCard = (props: any) => {
-  const { post, setPostId, postId} = props
- 
+  const { post, setPostId} = props
   const imageContent = post?.imageUrl
-  const nameAuthor = post?.author?.name 
+  const nameAuthor = post?.author?.name
 
   return (
     <View style={$container}>
@@ -27,7 +28,7 @@ const PostCard = (props: any) => {
       ) : (
         <ContentForText post={post}/>
       )}
-      <ContentFooter post={post} setPostId={setPostId} postId={postId}/>
+      <ContentFooter post={post} setPostId={setPostId}/>
     </View>
   )
 }

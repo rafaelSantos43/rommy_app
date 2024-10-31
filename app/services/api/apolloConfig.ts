@@ -10,7 +10,7 @@ const useApolloConfig = () => {
   const {session} = useStore()
 
   const httpLink = createHttpLink({
-    uri: "http://192.168.1.2:4000/graphql"
+    uri: "http://10.2.20.100:4000/graphql"
   })
   const authLink = setContext((_, { headers }) => {
     return {
@@ -22,7 +22,24 @@ const useApolloConfig = () => {
   })
   const client = new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            GetComments: {
+              merge(existing = [], incoming) {
+              
+                const merged = [...existing, ...incoming].filter(
+                  (item, index, self) =>
+                    index === self.findIndex((t) => t.__ref === item.__ref)
+                );
+                return merged;
+              },
+            },
+          },
+        },
+      },
+    }),
   })
 
   return client
