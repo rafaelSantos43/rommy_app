@@ -23,11 +23,11 @@ export const UserRegisterScreen = () => {
         autoComplete="email"
         autoCorrect={false}
         keyboardType="email-address"
-        //labelTx="loginScreen.emailFieldLabel"
-        //placeholderTx="loginScreen.emailFieldPlaceholder"
+        // labelTx="loginScreen.emailFieldLabel"
+        // placeholderTx="loginScreen.emailFieldPlaceholder"
         placeholder="name"
         // helper={error}
-        //status={error ? "error" : undefined}
+        // status={error ? "error" : undefined}
         // onSubmitEditing={() => authPasswordInput.current?.focus()}
       />
 
@@ -41,9 +41,9 @@ export const UserRegisterScreen = () => {
         autoCorrect={false}
         secureTextEntry={true}
         placeholder="last Name"
-        //labelTx="loginScreen.passwordFieldLabel"
+        // labelTx="loginScreen.passwordFieldLabel"
         // placeholderTx="loginScreen.passwordFieldPlaceholder"
-        //RightAccessory={PasswordRightAccessory}
+        // RightAccessory={PasswordRightAccessory}
       />
 
       <TextField
@@ -58,7 +58,7 @@ export const UserRegisterScreen = () => {
         placeholder="email"
         // labelTx="loginScreen.passwordFieldLabel"
         // placeholderTx="loginScreen.passwordFieldPlaceholder"
-        //RightAccessory={PasswordRightAccessory}
+        // RightAccessory={PasswordRightAccessory}
       />
       <TextField
         // ref={authPasswordInput}
@@ -72,7 +72,7 @@ export const UserRegisterScreen = () => {
         placeholder="password"
         // labelTx="loginScreen.passwordFieldLabel"
         // placeholderTx="loginScreen.passwordFieldPlaceholder"
-        //RightAccessory={PasswordRightAccessory}
+        // RightAccessory={PasswordRightAccessory}
       />
 
       <Button
@@ -95,14 +95,14 @@ const $logIn: TextStyle = {
   marginBottom: spacing.sm,
 }
 
-const $enterDetails: TextStyle = {
-  marginBottom: spacing.lg,
-}
+// const $enterDetails: TextStyle = {
+//   marginBottom: spacing.lg,
+// }
 
-const $hint: TextStyle = {
-  // color: color.tint,
-  marginBottom: spacing.md,
-}
+// const $hint: TextStyle = {
+//   // color: color.tint,
+//   marginBottom: spacing.md,
+// }
 
 const $textField: ViewStyle = {
   marginBottom: spacing.lg,

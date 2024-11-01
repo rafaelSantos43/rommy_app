@@ -9,8 +9,10 @@ import { Text, TextField } from "app/components"
 import useCreateComments from "app/modules/posts/HomeScreen/graphql/create_commet.mutation"
 import CommentCard from "./CommentCard"
 
-const CommentContentModal = ({ userId, postId }: any) => {
-const CommentContentModal = ({ userId, postId }: any) => {
+
+const CommentContentModal = ({ user, postId }: any) => {
+  const {_id:userId, name} = user
+  console.log("🚀 ~ CommentContentModal ~ userId:", name)
   const [content, setContent] = useState("")
 
   const { data } = useQuery(COMMENTS, {
@@ -34,7 +36,7 @@ const CommentContentModal = ({ userId, postId }: any) => {
         author: {
           __typename: "User",
           id: userId,
-          name: "",
+          name,
           avatar: "",
         },
         createdAt: CreateComment.createdAt,
@@ -102,7 +104,7 @@ const CommentContentModal = ({ userId, postId }: any) => {
             author: {
               __typename: "User",
               id: userId,
-              name: "",
+              name,
               avatar: "",
             },
             createdAt: Date.now(),

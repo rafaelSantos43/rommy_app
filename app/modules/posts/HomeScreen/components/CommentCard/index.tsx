@@ -1,11 +1,13 @@
+import React from "react"
 import { Card, Text } from "app/components"
 import { View } from "react-native"
-import ContentFooter from "../PostCard/ContentFooterPost"
+
 import { Trash2 } from "lucide-react-native"
 import {formatDistanceToNow} from 'date-fns'
 import ContentFooterComment from "./ContentFooterComment"
 
 const CommentCard = ({comment}:any) => {
+  console.log("🚀 ~ CommentCard ~ comment:", comment)
   const createdAt = Number(comment?.createdAt)
   const created = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
 
@@ -27,7 +29,7 @@ const CommentCard = ({comment}:any) => {
       }
       HeadingComponent={
         <View>
-          <Text style={{fontWeight:'bold'}}>Dahiana</Text>
+          <Text style={{fontWeight:'bold'}}>{comment.author?.name ? comment.author.name : 'Author Desconocido'}</Text>
           <Text style={{fontSize:11, color:'gray', top:-8}}>{created}</Text>
         </View>
       }

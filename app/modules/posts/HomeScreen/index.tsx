@@ -1,7 +1,5 @@
 import React, { FC, ReactElement, useState } from "react"
-import { Dimensions, FlatList, ViewStyle } from "react-native"
-import React, { FC, ReactElement, useState } from "react"
-import { Dimensions, FlatList, ViewStyle } from "react-native"
+import { FlatList, ViewStyle } from "react-native"
 
 // import Animated, {
 //   Extrapolate,
@@ -16,23 +14,19 @@ import { Dimensions, FlatList, ViewStyle } from "react-native"
 // import { Episode } from "../../../models/Episode"
 import { TabScreenProps } from "../../../navigators/TabNavigator"
 // import { colors } from "../../../theme"
-import CommentContentModal from "./components/CommentContentModal"
+
 import CommonModal from "app/components/CommonModal"
 import { useQuery } from "@apollo/client"
 import { POSTS } from "./graphql/posts.query"
 import PostCard from "./components/PostCard"
 import { Screen } from "app/components"
+import CommentContentModal from "./components/CommentContentModal"
 
 // const ICON_SIZE = 30
 // const height = Dimensions.get("screen").height
 // const width = Dimensions.get("screen").width
 // import { colors } from "../../../theme"
-import CommentContentModal from "./components/CommentContentModal"
-import CommonModal from "app/components/CommonModal"
-import { useQuery } from "@apollo/client"
-import { POSTS } from "./graphql/posts.query"
-import PostCard from "./components/PostCard"
-import { Screen } from "app/components"
+
 
 // const ICON_SIZE = 30
 // const height = Dimensions.get("screen").height
@@ -57,7 +51,8 @@ export interface Demo {
 
 export const HomeScreen: FC<TabScreenProps<"HomeScreen">> = function HomeScreen({ route }) {
   //  const [refreshing, setRefreshing] = React.useState(false)
-  const { _id: userId } = route.params.userSession
+  const { userSession} = route.params
+  console.log("🚀 ~ HomeScreen ~ userSession:", userSession.name)
   const [postId, setPostId] = useState("")
 
   // const [isLoading, setIsLoading] = React.useState(false)
@@ -74,7 +69,7 @@ export const HomeScreen: FC<TabScreenProps<"HomeScreen">> = function HomeScreen(
         />
       </Screen>
       <CommonModal>
-        <CommentContentModal userId={userId} postId={postId} />
+        <CommentContentModal user={userSession} postId={postId} />
       </CommonModal>
     </>
   )

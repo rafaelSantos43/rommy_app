@@ -52,7 +52,7 @@ const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = observer(function AppStack() {
   const { session } = useStore()
-  console.log(session?.name)
+  console.log(session?.name,'-----------------')
 
   return (
     <Stack.Navigator

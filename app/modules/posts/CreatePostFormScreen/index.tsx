@@ -12,7 +12,6 @@ import { TabScreenProps } from "app/navigators/TabNavigator"
 import { Button, Screen, Text, TextField } from "app/components"
 import { Post } from "./interface/Post"
 import { FRAGMENT_POST } from "../HomeScreen/graphql/posts.query"
-import { FRAGMENT_POST } from "../HomeScreen/graphql/posts.query"
 import ImageValidateType from "app/components/ImageValidateType"
 
 interface CreatePostFormScreenProps extends TabScreenProps<"CreatePostFormScreen"> {}
