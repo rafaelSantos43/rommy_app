@@ -10,7 +10,7 @@ const useApolloConfig = () => {
   const {session} = useStore()
 
   const httpLink = createHttpLink({
-    uri: "http://192.168.1.4:4000/graphql"
+    uri: "http://192.168.1.2:4000/graphql"
   })
   const authLink = setContext((_, { headers }) => {
     return {

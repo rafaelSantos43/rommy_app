@@ -14,10 +14,9 @@ import { handleimageUpload } from "app/services/api/uploadApi"
 import { TabScreenProps } from "app/navigators/TabNavigator"
 import { Button, Screen, Text, TextField } from "app/components"
 import { Post } from "./interface/Post"
+import ImageValidateType from "app/components/ImageValidateType"
 
 interface CreatePostFormScreenProps extends TabScreenProps<"CreatePostFormScreen"> {}
-
-
 
 export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) => {
   const { _id: userId, name } = route.params.userSession
@@ -33,7 +32,7 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
 
   useEffect(() => {
     if (ispermision) {
-      getLibraryPermision() // Solicitar permisos al iniciar
+      getLibraryPermision()
     }
   }, [ispermision])
   // const isButtonDisabled = !contentTitle || !contentDescription || isLoading
@@ -71,11 +70,9 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
       cache.writeQuery({
         query: POSTS,
         data: {
-          GetPosts: [
-            newPost,
-            ...existingPosts?.GetPosts].sort(
-              (a: Post, b: Post) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-            ),
+          GetPosts: [newPost, ...existingPosts?.GetPosts].sort(
+            (a: Post, b: Post) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          ),
         },
       })
     } catch (error) {
@@ -122,8 +119,7 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
 
         update(cache, { data: { CreatePost } }) {
           if (CreatePost) {
-
-            updateCache(cache,CreatePost)
+            updateCache(cache, CreatePost)
             //setIsLoading(false)
             setContentTitle("")
             setContentDescription("")
@@ -136,6 +132,12 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
       console.error("Error al crear el post!", error)
       //setIsLoading(false)
     }
+  }
+
+  const handleCancel = () => {
+    setSelectedImage("")
+    setContentTitle("")
+    setContentDescription("")
   }
   return (
     <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
@@ -168,7 +170,7 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
         />
       </View>
 
-      <View style={$containerButton}>
+      <View>
         <TouchableOpacity
           onPress={async () => {
             setIspermision(true)
@@ -178,8 +180,15 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
         >
           <ImageUp size={50} color={"black"} />
         </TouchableOpacity>
-        <Button text="Create" onPress={handleCreatePost} />
-        <Button text="Cancel" style={$buttonCancel} />
+        {selectedImage && (
+          <View style={$imageSelected}>
+            <ImageValidateType image={selectedImage} width={"100%"} height={200} />
+          </View>
+        )}
+        <View style={$containerButton}>
+          <Button text="Create" onPress={handleCreatePost} />
+          <Button text="Cancel" onPress={handleCancel} />
+        </View>
       </View>
     </Screen>
   )
@@ -205,10 +214,13 @@ const $textArea: ViewStyle = {
   marginBottom: 30,
 }
 
-const $containerButton: ViewStyle = {}
-
-const $buttonCreate: ViewStyle = {
-  marginBottom: 20,
+const $containerButton: ViewStyle = {
+  height:130,
+  marginVertical:20,
+  justifyContent:'space-around'
 }
 
-const $buttonCancel: ViewStyle = {}
+const $imageSelected: ViewStyle = {
+  width: "100%",
+  marginVertical: 10,
+}

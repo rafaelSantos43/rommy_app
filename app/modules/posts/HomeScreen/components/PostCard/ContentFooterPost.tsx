@@ -20,10 +20,10 @@ const ContentFooterPost = ({ post, setPostId, postId }: any) => {
   return (
     <>
       <View style={$container}>
-        <View style={$contentLikes}>
+        <TouchableOpacity style={$contentLikes}>
           <Icon icon="heart" size={20} color="black" />
           <Text>{likeCount}</Text>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             setPostId(post.id)
