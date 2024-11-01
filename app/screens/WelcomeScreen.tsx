@@ -1,7 +1,15 @@
 import { observer } from "mobx-react-lite"
 import React, { FC } from "react"
-import { Image, ImageBackground, ImageStyle, StyleSheet, TextStyle, View, ViewStyle } from "react-native"
-import {Button,Text,} from "app/components"
+import {
+  Image,
+  ImageBackground,
+  ImageStyle,
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native"
+import { Button, Text } from "app/components"
 import { isRTL } from "../i18n"
 import { useStores } from "../models"
 import { AppStackScreenProps, navigate } from "../navigators"
@@ -19,12 +27,12 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 ) {
   // @demo remove-block-start
   //const { navigation } = _props
- /*
+  /*
   /*function goNext() {
     navigation.navigate("Demo", { screen: "DemoShowroom", params: {} })
   }*/
 
- /* useHeader(
+  /* useHeader(
     {
       rightTx: "common.logOut",
       onRightPress: logout,
@@ -33,52 +41,49 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   )*/
   // @demo remove-block-end
 
-  
-
   return (
     <ImageBackground
-    source={{ uri: "https://i.pinimg.com/originals/d0/8f/88/d08f886bd8c39663eb12ad00738e7236.jpg" }} // Cambia la URL por la de tu imagen
-    style={styles.backgroundImage}
-    resizeMode="cover" // Ajusta la imagen para cubrir todo el espacio sin distorsionarse
-  >
-    <View style={styles.overlay}>
-      <Text style={styles.text}>Comparte tu aventura!</Text>
-    <Button
-     text="Sign In"
-     style={styles.button}
-     onPress={() => navigate("Login")}
-    />
-    </View>
-  </ImageBackground>
+      source={{
+        uri: "https://i.pinimg.com/originals/d0/8f/88/d08f886bd8c39663eb12ad00738e7236.jpg",
+      }} // Cambia la URL por la de tu imagen
+      style={styles.backgroundImage}
+      resizeMode="cover" // Ajusta la imagen para cubrir todo el espacio sin distorsionarse
+    >
+      <View style={styles.containerButton}>
+        <Text style={styles.text}>Comparte tu aventura!</Text>
+        <Button text="Sign In" style={styles.button} onPress={() => navigate("Login")} />
+        <Button text="Sign out" style={styles.button} onPress={() => navigate("UserRegisterScreen")} />
+      </View>
+    </ImageBackground>
   )
 })
 
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
-    justifyContent: 'flex-end', 
-    paddingBottom:20// Opcional: Centra el contenido verticalmente
-     // Opcional: Centra el contenido horizontalmente
+    justifyContent: "flex-end",
+    paddingBottom: 20, // Opcional: Centra el contenido verticalmente
+    // Opcional: Centra el contenido horizontalmente
   },
   _overlay: {
-    justifyContent: 'center', // Opcional: Centra el contenido verticalmente
-    alignItems: 'center',
-    gap:20
+    justifyContent: "center", // Opcional: Centra el contenido verticalmente
+    alignItems: "center",
+    gap: 20,
   },
-  get overlay() {
-    return this._overlay
+  containerButton:{
+    top:20,
+    height:200,
+    justifyContent:'space-around',
+    alignItems:'center'
   },
-  set overlay(value) {
-    this._overlay = value
-  },
+ 
   text: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 
-  button:{
-    width:100
-  }
-});
-
+  button: {
+    width: "60%",
+  },
+})

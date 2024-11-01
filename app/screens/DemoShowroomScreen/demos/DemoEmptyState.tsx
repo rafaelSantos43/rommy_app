@@ -3,7 +3,7 @@ import React from "react"
 import { EmptyState } from "../../../components"
 import { colors } from "../../../theme"
 import { DemoDivider } from "../DemoDivider"
-import { Demo } from "../../HomeScreen"
+import { Demo } from "../../../modules/posts/HomeScreen"
 import { DemoUseCase } from "../DemoUseCase"
 
 export const DemoEmptyState: Demo = {

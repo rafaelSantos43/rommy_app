@@ -6,4 +6,4 @@ export const passwordVar = makeVar("")
 
 //generales
 export const openModalVar = makeVar(false)
-export const  postIdVar = makeVar("")
+

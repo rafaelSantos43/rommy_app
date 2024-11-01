@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client"
+import { gql } from "@apollo/client"
 
 export const POSTS = gql`
   query GetPosts {
@@ -20,9 +20,3 @@ export const POSTS = gql`
     }
   }
 `
-
-const usePosts = () => {
-  return useQuery(POSTS)
-}
-
-export default usePosts

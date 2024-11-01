@@ -2,7 +2,7 @@
 import React from "react"
 import { Text } from "../../../components"
 import { colors } from "../../../theme"
-import { Demo } from "../../HomeScreen"
+import { Demo } from "../../../modules/posts/HomeScreen"
 import { DemoDivider } from "../DemoDivider"
 import { DemoUseCase } from "../DemoUseCase"
 

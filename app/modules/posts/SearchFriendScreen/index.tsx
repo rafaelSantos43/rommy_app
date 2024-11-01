@@ -19,32 +19,23 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated"
-import {
-  Button,
-  ButtonAccessoryProps,
-  Card,
-  EmptyState,
-  Icon,
-  ListView,
-  Screen,
-  Text,
-  TextField,
-  Toggle,
-} from "../components"
-import { isRTL, translate } from "../i18n"
-import { useStores } from "../models"
-import { Episode } from "../models/Episode"
-import {TabScreenProps } from "../navigators/TabNavigator"
-import { colors, spacing } from "../theme"
-import { delay } from "../utils/delay"
-import { openLinkInBrowser } from "../utils/openLinkInBrowser"
+
+
+
+
+import { Button, ButtonAccessoryProps, Card, Icon, Screen, Text, TextField } from "app/components"
+import { isRTL, translate } from "app/i18n"
+import { TabScreenProps } from "app/navigators/TabNavigator"
+import { Episode } from "app/models/Episode"
+import { openLinkInBrowser } from "app/utils/openLinkInBrowser"
+import { colors, spacing } from "app/theme"
 
 const ICON_SIZE = 14
 
-const rnrImage1 = require("../../assets/images/demo/rnr-image-1.png")
-const rnrImage2 = require("../../assets/images/demo/rnr-image-2.png")
-const rnrImage3 = require("../../assets/images/demo/rnr-image-3.png")
-const rnrImages = [rnrImage1, rnrImage2, rnrImage3]
+// const rnrImage1 = require("../../assets/images/demo/rnr-image-1.png")
+// const rnrImage2 = require("../../assets/images/demo/rnr-image-2.png")
+// const rnrImage3 = require("../../assets/images/demo/rnr-image-3.png")
+// const rnrImages = [rnrImage1, rnrImage2, rnrImage3]
 
 export const SearchFrinedScreen: FC<TabScreenProps<"SearchFrinedScreen">> = 
   function SearchFrinedScreen(_props) {

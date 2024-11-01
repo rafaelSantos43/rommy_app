@@ -35,14 +35,12 @@ import { useStore } from "app/store/useStore"
  *   https://reactnavigation.org/docs/typescript/#organizing-types
  */
 
-
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined // @demo remove-current-line
-  TabNavigator: {userSession:object} // @demo remove-current-line
+  UserRegisterScreen: undefined
+  TabNavigator: { userSession: object } // @demo remove-current-line
 }
-
-
 
 const exitRoutes = Config.exitRoutes
 
@@ -54,8 +52,8 @@ const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = observer(function AppStack() {
   const { session } = useStore()
-     console.log(session?.token);
-     
+  console.log(session?.name)
+
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, navigationBarColor: colors.background }}
@@ -63,7 +61,11 @@ const AppStack = observer(function AppStack() {
     >
       {session ? (
         <>
-          <Stack.Screen name="TabNavigator" component={TabNavigator} initialParams={{userSession: session}} />
+          <Stack.Screen
+            name="TabNavigator"
+            component={TabNavigator}
+            initialParams={{ userSession: session }}
+          />
         </>
       ) : (
         <>
@@ -72,6 +74,15 @@ const AppStack = observer(function AppStack() {
             name="Login"
             component={Screens.LoginScreen}
             options={{
+              headerShown: true,
+            }}
+          />
+
+          <Stack.Screen
+            name="UserRegisterScreen"
+            component={Screens.UserRegisterScreen}
+            options={{
+              title:'Create User',
               headerShown: true,
             }}
           />
@@ -84,7 +95,7 @@ const AppStack = observer(function AppStack() {
 export interface NavigationProps
   extends Partial<React.ComponentProps<typeof NavigationContainer>> {}
 
-export const AppNavigator =function AppNavigator(props: NavigationProps) {
+export const AppNavigator = function AppNavigator(props: NavigationProps) {
   const colorScheme = useColorScheme()
 
   useBackButtonHandler((routeName) => exitRoutes.includes(routeName))

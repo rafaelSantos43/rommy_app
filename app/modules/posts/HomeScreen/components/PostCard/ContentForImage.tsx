@@ -1,10 +1,5 @@
-import { Dimensions, View, ViewStyle } from "react-native"
-import ImageValidateType from "../../../../components/ImageValidateType"
-import { Text } from "../../../../components/Text"
-import {EllipsisVertical} from 'lucide-react-native'
-
-const width = Dimensions.get("screen").width
-const height = Dimensions.get("screen").height
+import { View, ViewStyle } from "react-native"
+import ImageValidateType from "app/components/ImageValidateType"
 
 const ContentForImage = (props: any) => {
   const {post} = props

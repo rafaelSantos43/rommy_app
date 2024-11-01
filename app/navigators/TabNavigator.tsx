@@ -11,6 +11,9 @@ import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import ImageValidateType from "app/components/ImageValidateType"
 import { LoaderPinwheel, SquarePen } from "lucide-react-native"
 import { navigate } from "./navigationUtilities"
+import { SearchFrinedScreen } from "app/modules/posts/SearchFriendScreen"
+import { CreatePostFormScreen } from "app/modules/posts/CreatePostFormScreen"
+import { SettingScreen } from "app/modules/posts/SettingScreen"
 
 
 export type TabParamList = {
@@ -83,7 +86,7 @@ export function TabNavigator({route}) {
 
       <Tab.Screen
         name="SearchFrinedScreen"
-        component={Screens.SearchFrinedScreen}
+        component={SearchFrinedScreen}
         options={{
           tabBarAccessibilityLabel: translate("demoNavigator.podcastListTab"),
           tabBarLabel: translate("demoNavigator.podcastListTab"),
@@ -95,7 +98,7 @@ export function TabNavigator({route}) {
 
       <Tab.Screen
         name="CreatePostFormScreen"
-        component={Screens.CreatePostFormScreen}
+        component={CreatePostFormScreen}
         initialParams={{userSession}}
         options={{
           tabBarLabel: translate("demoNavigator.debugTab"),
@@ -118,7 +121,7 @@ export function TabNavigator({route}) {
 
       <Tab.Screen
         name="Settings"
-        component={Screens.SettingScreen}
+        component={SettingScreen}
         initialParams={{userSession}}
         options={{
           tabBarLabel: translate("demoNavigator.debugTab"),
