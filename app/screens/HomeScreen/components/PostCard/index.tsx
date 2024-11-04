@@ -1,21 +1,18 @@
-import React, { useEffect, useState } from "react"
 import { View, ViewStyle } from "react-native"
-import ImageValidateType from "../../../../../components/ImageValidateType"
-import { Text } from "../../../../../components/Text"
+import ImageValidateType from "../../../../components/ImageValidateType"
+import { Text } from "../../../../components/Text"
 import { EllipsisVertical } from "lucide-react-native"
 import ContentForImage from "./ContentForImage"
 import ContentFooter from "./ContentFooterPost"
 import ContentForText from "./ContentForText"
 
-
-
-
 const PostCard = (props: any) => {
-  const { post, setPostIdList, userSession } = props
+  const { post } = props
+ 
   const imageContent = post?.imageUrl
-  const nameAuthor = post?.author?.name
-
+  const nameAuthor = post?.author?.name 
   
+
   return (
     <View style={$container}>
       <View style={$contentHeader}>
@@ -31,7 +28,7 @@ const PostCard = (props: any) => {
       ) : (
         <ContentForText post={post}/>
       )}
-      <ContentFooter post={post} setPostIdList={setPostIdList} userSession={userSession}/>
+      <ContentFooter post={post}/>
     </View>
   )
 }

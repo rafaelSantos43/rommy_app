@@ -12,21 +12,27 @@ import CommentCard from "./CommentCard"
 
 const CommentContentModal = ({ user, postId }: any) => {
   const {_id:userId, name} = user
-  console.log("🚀 ~ CommentContentModal ~ userId:", name)
+   console.log(userId,'el usar id');
+   
+ 
   const [content, setContent] = useState("")
 
-  const { data } = useQuery(COMMENTS, {
+  const { data, error } = useQuery(COMMENTS, {
     variables: {
       postId,
     },
   })
-
+  
+  //console.log('que paso', data);
+  
   const [createComment] = useCreateComments()
   const modalVisible = useReactiveVar(openModalVar)
   const flatListRef = useRef(null)
   const ITEM_HEIGHT = 100
 
   const updateCommentsInCache = (cache: any, CreateComment: Comment) => {
+    console.log(CreateComment);
+    
     try {
       const newComment = {
         __typename: "Comment",
@@ -39,8 +45,8 @@ const CommentContentModal = ({ user, postId }: any) => {
           name,
           avatar: "",
         },
-        createdAt: CreateComment.createdAt,
-        updatedAt: CreateComment.updatedAt,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       }
 
       const existingComments = cache.readQuery({

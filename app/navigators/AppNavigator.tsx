@@ -52,7 +52,7 @@ const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = observer(function AppStack() {
   const { session } = useStore()
-  console.log(session?.name,'-----------------')
+  console.log(session?.token, "-----------------")
 
   return (
     <Stack.Navigator
@@ -66,6 +66,14 @@ const AppStack = observer(function AppStack() {
             component={TabNavigator}
             initialParams={{ userSession: session }}
           />
+
+          {/* <Stack.Screen
+            name="ProfilePerson"
+            component={Screens.LoginScreen}
+            options={{
+              headerShown: true,
+            }}
+          /> */}
         </>
       ) : (
         <>
@@ -82,7 +90,7 @@ const AppStack = observer(function AppStack() {
             name="UserRegisterScreen"
             component={Screens.UserRegisterScreen}
             options={{
-              title:'Create User',
+              title: "Create User",
               headerShown: true,
             }}
           />

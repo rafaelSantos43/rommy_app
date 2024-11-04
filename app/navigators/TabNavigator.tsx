@@ -1,7 +1,7 @@
 import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { CompositeScreenProps } from "@react-navigation/native"
 import React from "react"
-import { TextStyle, View, ViewStyle } from "react-native"
+import { Pressable, TextStyle, View, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "../i18n"
@@ -14,11 +14,14 @@ import { navigate } from "./navigationUtilities"
 import { SearchFrinedScreen } from "app/modules/posts/SearchFriendScreen"
 import { CreatePostFormScreen } from "app/modules/posts/CreatePostFormScreen"
 import { SettingScreen } from "app/modules/posts/SettingScreen"
+import { useApolloClient } from "@apollo/client"
+import {HomeScreen} from "app/modules/posts/HomeScreen/ListPostScreen"
+import { HomeScreenNavigator } from "app/modules/posts/HomeScreen/HomeScreenNavigator"
 
 
 export type TabParamList = {
   DemoCommunity: undefined
-  HomeScreen: {userSession:object}
+  HomeScreenNavigator: {userSession:object}
   Settings: {userSession:object}
   SearchFrinedScreen: undefined
   CreatePostFormScreen: {userSession:object}
@@ -47,6 +50,19 @@ export function TabNavigator({route}) {
   const { bottom } = useSafeAreaInsets()
   const {userSession} = route?.params  
 
+ 
+    const client = useApolloClient();
+  
+    const handleResetCache = async () => {
+      try {
+        // Esto borrará el caché
+        await client.resetStore();
+        console.log("Caché de Apollo reseteado.");
+      } catch (error) {
+        console.error("Error al resetear el caché:", error);
+      }
+    };
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -60,8 +76,8 @@ export function TabNavigator({route}) {
       }}
     >
       <Tab.Screen
-        name="HomeScreen"
-        component={Screens.HomeScreen}
+        name="HomeScreenNavigator"
+        component={HomeScreenNavigator}
         initialParams={{userSession}}
         options={{
           title: "Roomy",
@@ -69,9 +85,11 @@ export function TabNavigator({route}) {
           headerShown: true,
           tabBarLabel: translate("demoNavigator.componentsTab"),
           headerLeft: () => (
-            <View style={{ paddingHorizontal: 10 }}>
+            <Pressable 
+            onPress={handleResetCache}
+            style={{ paddingHorizontal: 10 }}>
               <Icon icon="camera" color={colors.tint} size={30} />
-            </View>
+            </Pressable>
           ),
           headerRight: () => (
             <View style={{ paddingHorizontal: 10 }}>

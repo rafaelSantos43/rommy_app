@@ -1,16 +1,13 @@
 import { gql, useMutation } from "@apollo/client";
 
 export const CREATE_COMMENT = gql`
-mutation CreateComment($filter: CommentCreate!) {
-  CreateComment(filter: $filter) {
+mutation Mutation($input: CommentCreate!) {
+  CreateComment(input: $input) {
     content
     id
     postId
-    author {
-      id
-      name
-      avatar
-    }
+    createdAt
+    updatedAt
   }
 }
 `

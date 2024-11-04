@@ -1,94 +1,115 @@
-import React from "react"
-import { TouchableOpacity, View, ViewStyle } from "react-native"
-import { BookmarkPlus, MessageCircle, Share } from "lucide-react-native"
-import { openModalVar } from "app/store/reactiveVars"
-import { Icon, Text } from "app/components"
-import { useMutation } from "@apollo/client"
-import { ADD_LIKE } from "../../graphql/addLike_post.mutation"
+import React from "react";
+import { TouchableOpacity, View, ViewStyle } from "react-native";
+import { BookmarkPlus, MessageCircle, Share } from "lucide-react-native";
+import { openModalVar } from "app/store/reactiveVars";
+import { Icon, Text } from "app/components";
+import { useMutation, useQuery } from "@apollo/client";
+import { ADD_LIKE } from "../../graphql/addLike_post.mutation";
+import { navigate } from "app/navigators";
+import { GET_LIST_LIKE } from "../../graphql/GetListLike.query";
 
-// mutation addLike($postId: ID!) {
-//   addLike(postId: $postId) {
-//     author {
-//       name
-//       avatar
-//       id
-//     }
-//   }
-// }
-const updateLikeInCache = (cache: any, postId: string) => {
- cache.modify({
-    id: cache.identify({ __typename: "Post", id: postId }),
-    fields: {
-      likeCount(existingLikeCount = 0) {
-        console.log("🚀 ~ likeCount ~ existingLikeCount:", existingLikeCount)
-        if (!existingLikeCount) {
-           existingLikeCount = 0
-          return existingLikeCount
-        }
-        return existingLikeCount 
-      },
-    },
-  })
+const ContentFooterPost = ({ post, setPostIdList, userSession }) => {
+  const { id, likeCount, commentCount } = post;
 
-}
+  const { data: likeList } = useQuery(GET_LIST_LIKE, {
+    variables: { postId: id },
+  });
 
-const ContentFooterPost = ({ post, setPostId, postId }: any) => {
-  const { likeCount, commentCount } = post
+  const userHasLiked = likeList?.GetListLike?.some(
+    (likeUser) => likeUser.author.id === userSession._id
+  );
 
   const [addLike] = useMutation(ADD_LIKE, {
     variables: {
-      postId,
+      postId: id,
     },
+
     update(cache, { data: { addLike } }) {
-      if (addLike) updateLikeInCache(cache, postId)
+      if (addLike) {
+        const postCacheId = cache.identify({ __typename: "Post", id });
+        const readListLikeInCache = cache.readQuery({
+          query: GET_LIST_LIKE,
+          variables: { postId: id },
+        });
+        const existingLikeIncache = readListLikeInCache?.GetListLike?.some(
+          (likeUser) => likeUser.author.id === userSession._id
+        );
+
+        cache.modify({
+          id: postCacheId,
+          fields: {
+            likeCount(existingLikes) {
+              return existingLikeIncache ? Math.max(existingLikes - 1, 0) : existingLikes + 1;
+            },
+          },
+        });
+
+        const updatedLikes = existingLikeIncache
+          ? readListLikeInCache?.GetListLike.filter(
+              (likeUser) => likeUser.author.id !== userSession._id
+            )
+          : [
+              ...readListLikeInCache?.GetListLike,
+              {
+                __typename: "Like",
+                id: addLike.id || `temp-${Date.now()}`,
+                author: {
+                  __typename: "User",
+                  id: userSession._id,
+                  name: userSession.name,
+                  avatar: userSession.avatar,
+                },
+                createdAt: "",
+                updatedAt: "",
+              },
+            ];
+
+        cache.writeQuery({
+          query: GET_LIST_LIKE,
+          variables: { postId: id },
+          data: {
+            GetListLike: updatedLikes,
+          },
+        });
+      }
     },
-    // optimisticResponse: {
-    //   __typename: "Post",
-    //   postId
-    // }
-  })
+  });
 
   const handleAddLike = async () => {
     try {
-      await addLike()
-      console.log("se dio like")
+      addLike();
     } catch (error) {
-      console.error(`Error al dar like ${error}`)
+      console.error(`Error al dar like ${error}`);
     }
-  }
+  };
+
   return (
-    <>
-      <View style={$container}>
-        <TouchableOpacity
-          onPress={() => {
-            setPostId(post.id)
-           if(postId) handleAddLike()
-          }}
-          style={$contentLikes}
-        >
-          <Icon icon="heart" size={20} color="black" />
-          {!likeCount ? "" : <Text>{likeCount}</Text>}
+    <View style={$container}>
+      <TouchableOpacity onPress={handleAddLike} style={$contentLikes}>
+        <Icon icon="heart" size={20} color={userHasLiked ? "red" : "black"} />
+        <TouchableOpacity onPress={() => navigate("LikeListScreen", { postId: id })}>
+          <Text>{likeCount} you other...</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setPostId(post.id)
-            openModalVar(true)
-          }}
-          style={$contentComments}
-        >
-          <MessageCircle size={20} color="black" />
-          {!commentCount ? "" : <Text>{commentCount}</Text>}
-        </TouchableOpacity>
-        <View>
-          <Share size={20} color="black" />
-        </View>
-        <View>
-          <BookmarkPlus size={20} color="black" />
-        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          openModalVar(true);
+          setPostIdList(post.id);
+        }}
+        style={$contentComments}
+      >
+        <MessageCircle size={20} color="black" />
+        {commentCount ? <Text>{commentCount}</Text> : ""}
+      </TouchableOpacity>
+      <View>
+        <Share size={20} color="black" />
       </View>
-    </>
-  )
-}
+      <View>
+        <BookmarkPlus size={20} color="black" />
+      </View>
+    </View>
+  );
+};
 
 const $container: ViewStyle = {
   flex: 1,
@@ -96,16 +117,17 @@ const $container: ViewStyle = {
   justifyContent: "space-between",
   alignItems: "center",
   paddingHorizontal: 5,
-}
+};
 
 const $contentLikes: ViewStyle = {
   flexDirection: "row",
   alignItems: "center",
   columnGap: 8,
-}
+  padding: 5,
+};
 
 const $contentComments: ViewStyle = {
   ...$contentLikes,
-}
+};
 
-export default ContentFooterPost
+export default ContentFooterPost;

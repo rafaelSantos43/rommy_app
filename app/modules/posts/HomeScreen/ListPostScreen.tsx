@@ -12,7 +12,7 @@ import { FlatList, ViewStyle } from "react-native"
 // import { translate } from "../../../i18n"
 // import { useStores } from "../../../models"
 // import { Episode } from "../../../models/Episode"
-import { TabScreenProps } from "../../../navigators/TabNavigator"
+
 // import { colors } from "../../../theme"
 
 import CommonModal from "app/components/CommonModal"
@@ -21,6 +21,7 @@ import { POSTS } from "./graphql/posts.query"
 import PostCard from "./components/PostCard"
 import { Screen } from "app/components"
 import CommentContentModal from "./components/CommentContentModal"
+import { HomeScreenNavigatorProps } from "./HomeScreenNavigator"
 
 // const ICON_SIZE = 30
 // const height = Dimensions.get("screen").height
@@ -49,11 +50,12 @@ export interface Demo {
   data: ReactElement[]
 }
 
-export const HomeScreen: FC<TabScreenProps<"HomeScreen">> = function HomeScreen({ route }) {
+export const ListPostScreen: FC<HomeScreenNavigatorProps<"ListPostScreen">> = ({ route })  => {
   //  const [refreshing, setRefreshing] = React.useState(false)
   const { userSession} = route.params
-  console.log("🚀 ~ HomeScreen ~ userSession:", userSession.name)
-  const [postId, setPostId] = useState("")
+  const [postIdList, setPostIdList] = useState("")
+
+console.log('poer qq--------------',postIdList);
 
   // const [isLoading, setIsLoading] = React.useState(false)
   const { data } = useQuery(POSTS)
@@ -64,12 +66,12 @@ export const HomeScreen: FC<TabScreenProps<"HomeScreen">> = function HomeScreen(
           data={data?.GetPosts}
           keyExtractor={(post) => post.id}
           renderItem={({ item: post }) => (
-            <PostCard post={post} setPostId={setPostId} postId={postId} />
+            <PostCard post={post} userSession={userSession}  setPostIdList={setPostIdList}/>
           )}
         />
       </Screen>
       <CommonModal>
-        <CommentContentModal user={userSession} postId={postId} />
+        <CommentContentModal user={userSession} postId={postIdList} />
       </CommonModal>
     </>
   )

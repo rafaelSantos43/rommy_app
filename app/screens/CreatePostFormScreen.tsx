@@ -1,25 +1,26 @@
 import React, { FC, useEffect, useState } from "react"
-import { gql, useMutation } from "@apollo/client"
 import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
-import { ImageUp } from "lucide-react-native"
-
-import { spacing } from "app/theme"
+import { Button, Screen, Text, TextField } from "../components"
+import { TabScreenProps } from "../navigators/TabNavigator"
+import { spacing } from "../theme"
+import useCreatePost from "app/models/graphql/mutations/create_Post"
+import { POSTS } from "app/models/graphql/querys/posts"
 import { navigate } from "app/navigators"
-import { CREATE_POST } from "app/modules/posts/CreatePostFormScreen/graphql/create_Post.mutation"
+import { ImageUp } from "lucide-react-native"
 import { getLibraryPermision, launchImageLibrary } from "app/utils/getPermisionFile"
 import { handleimageUpload } from "app/services/api/uploadApi"
-import { TabScreenProps } from "app/navigators/TabNavigator"
-import { Button, Screen, Text, TextField } from "app/components"
-import { Post } from "./interface/Post"
-import { FRAGMENT_POST } from "../HomeScreen/graphql/posts.query"
-import ImageValidateType from "app/components/ImageValidateType"
 
 interface CreatePostFormScreenProps extends TabScreenProps<"CreatePostFormScreen"> {}
 
-export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) => {
-  const { _id: userId, name } = route.params.userSession
+interface Post {
+  createdAt: string
+}
 
-  const [createPost] = useMutation(CREATE_POST)
+export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = function CreatePostFormScreen({
+  route,
+}) {
+  const { _id: userId, name } = route.params.userSession
+  const [createPost] = useCreatePost()
 
   const idFake = Math.random().toString(36).substr(2, 9)
 
@@ -30,52 +31,13 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
 
   useEffect(() => {
     if (ispermision) {
-      getLibraryPermision() 
+      getLibraryPermision() // Solicitar permisos al iniciar
     }
   }, [ispermision])
   // const isButtonDisabled = !contentTitle || !contentDescription || isLoading
-
-  const updateCache = (cache: any, CreatePost: Post) => {
-    try {
-      const newPost = {
-        __typename: "Post",
-        id: CreatePost.id,
-        title: CreatePost.title,
-        content: CreatePost.content,
-        imageUrl: CreatePost.imageUrl || "",
-        createdAt: CreatePost.createdAt,
-        updatedAt: CreatePost.updatedAt,
-        author: {
-          __typename: "User",
-          id: userId,
-          name,
-          avatar: "",
-        },
-        commentCount:0,
-        likeCount: 0,
-      }
-   
-      cache.modify({
-        fields:{
-          GetPosts( existingPosts = []){
-            const newPostRef = cache.writeFragment({
-              data: newPost,
-              fragment: FRAGMENT_POST
-            })
-            return [newPostRef, ...existingPosts].sort(
-              (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-            )
-          }
-        }
-      })
-    } catch (error) {
-      throw new Error(`Error al escribir el post en el cache: ${error}`)
-    }
-  }
-
   const handleCreatePost = async () => {
     let image = ""
-    // setIsLoading(true)
+    //setIsLoading(true)
     try {
       if (selectedImage) image = await handleimageUpload(selectedImage)
 
@@ -84,6 +46,7 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
           filter: {
             title: contentTitle,
             content: contentDescription,
+            author: userId,
             imageUrl: image || "",
           },
         },
@@ -95,41 +58,73 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
             title: contentTitle,
             content: contentDescription,
             imageUrl: image || "",
+            commentCount: 0,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             author: {
               __typename: "User",
               id: userId,
-              name,
+              name: name,
               avatar: "",
             },
-            commentCount:0,
+            likes: [],
             likeCount: 0,
-            
+            comments: [],
           },
         },
 
         update(cache, { data: { CreatePost } }) {
           if (CreatePost) {
-            updateCache(cache, CreatePost)
-            
+            const existingPosts = cache.readQuery({ query: POSTS })
+
+            if (!existingPosts) {
+              console.error("No se encontraron publicaciones existentes en la caché")
+              return
+            }
+
+            cache.writeQuery({
+              query: POSTS,
+              data: {
+                GetPosts: [
+                  {
+                    __typename: "Post",
+                    id: CreatePost.id,
+                    title: CreatePost.title,
+                    content: CreatePost.content,
+                    imageUrl: CreatePost.imageUrl || "",
+                    commentCount: 0,
+                    createdAt: CreatePost.createdAt,
+                    updatedAt: CreatePost.updatedAt,
+                    author: {
+                      __typename: "User",
+                      id: userId,
+                      name: name,
+                      avatar: "",
+                    },
+                    likes: [],
+                    likeCount: 0,
+                    comments: [],
+                  },
+                  ...existingPosts?.GetPosts,
+                ].sort(
+                  (a: Post, b: Post) =>
+                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+                ),
+              },
+            })
+
+            //setIsLoading(false)
+            setContentTitle("")
+            setContentDescription("")
+            setSelectedImage("")
+            navigate("HomeScreen")
           }
         },
       })
-      setContentTitle("")
-      setContentDescription("")
-      setSelectedImage("")
-      navigate("ListPostScreen")
     } catch (error) {
       console.error("Error al crear el post!", error)
-      // setIsLoading(false)
+      //setIsLoading(false)
     }
-  }
-
-  const handleCancel = () => {
-    setSelectedImage("")
-    setContentTitle("")
-    setContentDescription("")
   }
   return (
     <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
@@ -144,8 +139,8 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
           autoCorrect={false}
           placeholder="escribe un titulo."
           // status={isLoading ? "error" : undefined}
-          // labelTx="loginScreen.passwordFieldLabel"
-          // placeholderTx="loginScreen.passwordFieldPlaceholder"
+          //labelTx="loginScreen.passwordFieldLabel"
+          //placeholderTx="loginScreen.passwordFieldPlaceholder"
         />
 
         <TextField
@@ -157,12 +152,12 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
           autoCorrect={false}
           label="Description"
           // labelTx="loginScreen.emailFieldLabel"
-          // placeholderTx="loginScreen.emailFieldPlaceholder"
+          //placeholderTx="loginScreen.emailFieldPlaceholder"
           placeholder="escribe algo aqui..."
         />
       </View>
 
-      <View>
+      <View style={$containerButton}>
         <TouchableOpacity
           onPress={async () => {
             setIspermision(true)
@@ -172,15 +167,8 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
         >
           <ImageUp size={50} color={"black"} />
         </TouchableOpacity>
-        {selectedImage && (
-          <View style={$imageSelected}>
-            <ImageValidateType image={selectedImage} width={"100%"} height={200} />
-          </View>
-        )}
-        <View style={$containerButton}>
-          <Button text="Create" onPress={handleCreatePost} />
-          <Button text="Cancel" onPress={handleCancel} />
-        </View>
+        <Button text="Create" onPress={handleCreatePost} />
+        <Button text="Cancel" style={$buttonCancel} />
       </View>
     </Screen>
   )
@@ -206,13 +194,10 @@ const $textArea: ViewStyle = {
   marginBottom: 30,
 }
 
-const $containerButton: ViewStyle = {
-  height:130,
-  marginVertical:20,
-  justifyContent:'space-around'
+const $containerButton: ViewStyle = {}
+
+const $buttonCreate: ViewStyle = {
+  marginBottom: 20,
 }
 
-const $imageSelected: ViewStyle = {
-  width: "100%",
-  marginVertical: 10,
-}
+const $buttonCancel: ViewStyle = {}
