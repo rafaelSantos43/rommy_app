@@ -6,25 +6,23 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "../i18n"
 import * as Screens from "app/screens"
-import { colors} from "../theme"
+import { colors } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import ImageValidateType from "app/components/ImageValidateType"
-import { LoaderPinwheel, SquarePen } from "lucide-react-native"
+import { LoaderPinwheel } from "lucide-react-native"
 import { navigate } from "./navigationUtilities"
 import { SearchFrinedScreen } from "app/modules/posts/SearchFriendScreen"
 import { CreatePostFormScreen } from "app/modules/posts/CreatePostFormScreen"
 import { SettingScreen } from "app/modules/posts/SettingScreen"
 import { useApolloClient } from "@apollo/client"
-import {HomeScreen} from "app/modules/posts/HomeScreen/ListPostScreen"
 import { HomeScreenNavigator } from "app/modules/posts/HomeScreen/HomeScreenNavigator"
-
 
 export type TabParamList = {
   DemoCommunity: undefined
-  HomeScreenNavigator: {userSession:object}
-  Settings: {userSession:object}
+  HomeScreenNavigator: { userSession: object }
+  Settings: { userSession: object }
   SearchFrinedScreen: undefined
-  CreatePostFormScreen: {userSession:object}
+  CreatePostFormScreen: { userSession: object }
 }
 
 /**
@@ -46,22 +44,21 @@ const Tab = createBottomTabNavigator<TabParamList>()
  * More info: https://reactnavigation.org/docs/bottom-tab-navigator/
  * @returns {JSX.Element} The rendered `DemoNavigator`.
  */
-export function TabNavigator({route}) {
+export function TabNavigator({ route }) {
   const { bottom } = useSafeAreaInsets()
-  const {userSession} = route?.params  
+  const { userSession } = route?.params
 
- 
-    const client = useApolloClient();
-  
-    const handleResetCache = async () => {
-      try {
-        // Esto borrará el caché
-        await client.resetStore();
-        console.log("Caché de Apollo reseteado.");
-      } catch (error) {
-        console.error("Error al resetear el caché:", error);
-      }
-    };
+  const client = useApolloClient()
+
+  const handleResetCache = async () => {
+    try {
+      // Esto borrará el caché
+      await client.resetStore()
+      console.log("Caché de Apollo reseteado.")
+    } catch (error) {
+      console.error("Error al resetear el caché:", error)
+    }
+  }
 
   return (
     <Tab.Navigator
@@ -78,22 +75,20 @@ export function TabNavigator({route}) {
       <Tab.Screen
         name="HomeScreenNavigator"
         component={HomeScreenNavigator}
-        initialParams={{userSession}}
+        initialParams={{ userSession }}
         options={{
           title: "Roomy",
           headerTitleAlign: "center",
           headerShown: true,
           tabBarLabel: translate("demoNavigator.componentsTab"),
           headerLeft: () => (
-            <Pressable 
-            onPress={handleResetCache}
-            style={{ paddingHorizontal: 10 }}>
+            <Pressable onPress={handleResetCache} style={{ paddingHorizontal: 10 }}>
               <Icon icon="camera" color={colors.tint} size={30} />
             </Pressable>
           ),
           headerRight: () => (
             <View style={{ paddingHorizontal: 10 }}>
-              <ImageValidateType width={30} height={30} radius={50} />
+              <ImageValidateType image={userSession.avatar} width={35} height={35} radius={50} />
             </View>
           ),
           tabBarIcon: ({ focused }) => (
@@ -117,11 +112,15 @@ export function TabNavigator({route}) {
       <Tab.Screen
         name="CreatePostFormScreen"
         component={CreatePostFormScreen}
-        initialParams={{userSession}}
+        initialParams={{ userSession }}
         options={{
           tabBarLabel: translate("demoNavigator.debugTab"),
           tabBarIcon: ({ focused }) => (
-            <LoaderPinwheel size={50} color={focused ? colors.tint : "black"} onPress={() => navigate("CreatePostFormScreen")}/>
+            <LoaderPinwheel
+              size={50}
+              color={focused ? colors.tint : "black"}
+              onPress={() => navigate("CreatePostFormScreen")}
+            />
           ),
         }}
       />
@@ -140,7 +139,7 @@ export function TabNavigator({route}) {
       <Tab.Screen
         name="Settings"
         component={SettingScreen}
-        initialParams={{userSession}}
+        initialParams={{ userSession }}
         options={{
           tabBarLabel: translate("demoNavigator.debugTab"),
           tabBarIcon: ({ focused }) => (

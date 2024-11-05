@@ -8,10 +8,10 @@ const ContentForText = (props: any) => {
   const content = post?.content
   return (
     <View style={$contentCenter}>
-      <Text>{title}</Text>
-      <Text numberOfLines={6} style={$contentDescription}>
-        {content}
-      </Text>
+      <Text style={{fontWeight:'bold', color:'gray'}}>{title}</Text>
+      <View style={{backgroundColor:'white', opacity:0.8, padding:10, borderRadius:5}}>
+        <Text numberOfLines={6} style={{color:'#736F6F'}}>{content}</Text>
+      </View>
     </View>
   )
 }
@@ -19,14 +19,8 @@ const ContentForText = (props: any) => {
 export default ContentForText
 
 const $contentCenter: ViewStyle = {
-  borderWidth: 1,
-  borderColor: "gray",
-  borderRadius: 20,
-  padding: 10,
+  rowGap :10,
+  borderRadius: 10,
   marginVertical: 10,
-  height: 200,
 }
 
-const $contentDescription: ViewStyle = {
-    
-}

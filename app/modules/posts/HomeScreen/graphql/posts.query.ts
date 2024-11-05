@@ -9,6 +9,7 @@ export const FRAGMENT_POST = gql`
     author {
       id
       name
+      avatar
     }
     commentCount
     likeCount
@@ -26,7 +27,7 @@ export const POSTS = gql`
       imageUrl
       author {
         id
-        name
+        name 
         avatar
       }
       commentCount

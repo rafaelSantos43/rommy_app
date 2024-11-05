@@ -48,11 +48,11 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStack
   AppStackParamList,
   T
 >
-const Stack = createNativeStackNavigator<AppStackParamList>()
+const Stack = createNativeStackNavigator<AppStackParamList>() 
 
 const AppStack = observer(function AppStack() {
   const { session } = useStore()
-  console.log(session?.token, "-----------------")
+  console.log(session?.token, "-----------------") 
 
   return (
     <Stack.Navigator

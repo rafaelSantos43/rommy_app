@@ -17,7 +17,7 @@ import ImageValidateType from "app/components/ImageValidateType"
 interface CreatePostFormScreenProps extends TabScreenProps<"CreatePostFormScreen"> {}
 
 export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) => {
-  const { _id: userId, name } = route.params.userSession
+  const { _id: userId, name , avatar} = route.params.userSession
 
   const [createPost] = useMutation(CREATE_POST)
 
@@ -49,7 +49,7 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
           __typename: "User",
           id: userId,
           name,
-          avatar: "",
+          avatar: avatar || "",
         },
         commentCount:0,
         likeCount: 0,
@@ -101,7 +101,7 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
               __typename: "User",
               id: userId,
               name,
-              avatar: "",
+              avatar: avatar || "",
             },
             commentCount:0,
             likeCount: 0,

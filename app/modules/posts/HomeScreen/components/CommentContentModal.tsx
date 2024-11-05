@@ -11,8 +11,8 @@ import CommentCard from "./CommentCard"
 
 
 const CommentContentModal = ({ user, postId }: any) => {
-  const {_id:userId, name} = user
-   console.log(userId,'el usar id');
+  const {_id:userId, name, avatar} = user
+   console.log(avatar,'el usar id');
    
  
   const [content, setContent] = useState("")
@@ -43,7 +43,7 @@ const CommentContentModal = ({ user, postId }: any) => {
           __typename: "User",
           id: userId,
           name,
-          avatar: "",
+          avatar: avatar || "",
         },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -111,7 +111,7 @@ const CommentContentModal = ({ user, postId }: any) => {
               __typename: "User",
               id: userId,
               name,
-              avatar: "",
+              avatar: avatar ||"" ,
             },
             createdAt: Date.now(),
             updatedAt: Date.now(),

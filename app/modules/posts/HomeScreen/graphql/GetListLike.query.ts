@@ -6,6 +6,7 @@ query GetListLike($postId: ID!) {
     author {
       id
       name
+      avatar
     }
     id
     createdAt

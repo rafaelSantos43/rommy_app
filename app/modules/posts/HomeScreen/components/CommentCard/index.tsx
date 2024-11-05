@@ -5,8 +5,10 @@ import { View } from "react-native"
 import { Trash2 } from "lucide-react-native"
 import {formatDistanceToNow} from 'date-fns'
 import ContentFooterComment from "./ContentFooterComment"
+import ImageValidateType from "app/components/ImageValidateType"
 
 const CommentCard = ({comment}:any) => {
+  console.log(comment,'hallloq');
   
   //const createdAt = Number(comment?.createdAt)
   //const created = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
@@ -15,15 +17,8 @@ const CommentCard = ({comment}:any) => {
     <Card
       style={{borderWidth:0, borderRadius:0,}}
       LeftComponent={
-      <View style = {{
-        width: 40,
-        height:40,
-        borderWidth:1,
-        borderRadius:50,
-        justifyContent:'center',
-        alignItems:'center'
-        }}>
-        <Text>AV</Text>
+      <View>
+        <ImageValidateType image={comment.author.avatar} width={40} height={40} radius={50}/>
       </View>
       }
       HeadingComponent={

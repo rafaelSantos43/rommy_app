@@ -8,16 +8,16 @@ import { ADD_LIKE } from "../../graphql/addLike_post.mutation";
 import { navigate } from "app/navigators";
 import { GET_LIST_LIKE } from "../../graphql/GetListLike.query";
 
-const ContentFooterPost = ({ post, setPostIdList, userSession }) => {
+const ContentFooterPost = ({ post, setPostIdList, userSession }:any) => {
   const { id, likeCount, commentCount } = post;
-
+    
   const { data: likeList } = useQuery(GET_LIST_LIKE, {
     variables: { postId: id },
-  });
+  })
 
   const userHasLiked = likeList?.GetListLike?.some(
     (likeUser) => likeUser.author.id === userSession._id
-  );
+  )
 
   const [addLike] = useMutation(ADD_LIKE, {
     variables: {
@@ -33,7 +33,7 @@ const ContentFooterPost = ({ post, setPostIdList, userSession }) => {
         });
         const existingLikeIncache = readListLikeInCache?.GetListLike?.some(
           (likeUser) => likeUser.author.id === userSession._id
-        );
+        )
 
         cache.modify({
           id: postCacheId,
@@ -57,7 +57,7 @@ const ContentFooterPost = ({ post, setPostIdList, userSession }) => {
                   __typename: "User",
                   id: userSession._id,
                   name: userSession.name,
-                  avatar: userSession.avatar,
+                  avatar: userSession.avatar || "",
                 },
                 createdAt: "",
                 updatedAt: "",
@@ -72,6 +72,22 @@ const ContentFooterPost = ({ post, setPostIdList, userSession }) => {
           },
         });
       }
+    },
+
+    optimisticResponse: {
+      __typename: "Mutation",
+      addLike: {
+        __typename: "Like",
+        id: `temp-${Date.now()}`,
+        author: {
+          __typename: "User",
+          id: userSession._id,
+          name: userSession.name,
+          avatar: userSession.avatar || "",
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
     },
   });
 

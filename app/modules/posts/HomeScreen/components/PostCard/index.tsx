@@ -14,14 +14,16 @@ const PostCard = (props: any) => {
   const { post, setPostIdList, userSession } = props
   const imageContent = post?.imageUrl
   const nameAuthor = post?.author?.name
-
+  const imageAuthor = post?.author?.avatar  
+  console.log(imageAuthor,'algo paso');
   
+      
   return (
     <View style={$container}>
       <View style={$contentHeader}>
         <View style={$contentImage}>
-          <ImageValidateType  width={40} height={40} radius={50} />
-          <Text>{nameAuthor}</Text>
+          <ImageValidateType image={imageAuthor}  width={40} height={40} radius={50} />
+          <Text style={{fontWeight:'bold'}}>{nameAuthor}</Text>
         </View>
         <EllipsisVertical size={25} color={"black"} style={{}} />
       </View>
@@ -40,8 +42,9 @@ export default PostCard
 
 const $container: ViewStyle = {
   flex: 1,
+ // marginBottom:1,
   // height: height * 0.79,
-  marginVertical: 20,
+  marginVertical: 15,
 }
 
 const $contentHeader: ViewStyle = {
