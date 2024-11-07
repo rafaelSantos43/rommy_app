@@ -12,27 +12,22 @@ import CommentCard from "./CommentCard"
 
 const CommentContentModal = ({ user, postId }: any) => {
   const {_id:userId, name, avatar} = user
-   console.log(avatar,'el usar id');
-   
- 
   const [content, setContent] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { data, error } = useQuery(COMMENTS, {
+  const { data } = useQuery(COMMENTS, {
     variables: {
       postId,
     },
   })
-  
-  //console.log('que paso', data);
-  
+
   const [createComment] = useCreateComments()
   const modalVisible = useReactiveVar(openModalVar)
   const flatListRef = useRef(null)
   const ITEM_HEIGHT = 100
 
+  const isButtonDisabled = !content || isLoading
   const updateCommentsInCache = (cache: any, CreateComment: Comment) => {
-    console.log(CreateComment);
-    
     try {
       const newComment = {
         __typename: "Comment",
@@ -43,7 +38,7 @@ const CommentContentModal = ({ user, postId }: any) => {
           __typename: "User",
           id: userId,
           name,
-          avatar: avatar || "",
+          avatar,
         },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -86,6 +81,7 @@ const CommentContentModal = ({ user, postId }: any) => {
   }
 
   const handleCreateComments = async () => {
+    setIsLoading(true)
     try {
       await createComment({
         variables: {
@@ -111,10 +107,10 @@ const CommentContentModal = ({ user, postId }: any) => {
               __typename: "User",
               id: userId,
               name,
-              avatar: avatar ||"" ,
+              avatar: "",
             },
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
           },
         },
       })
@@ -122,6 +118,8 @@ const CommentContentModal = ({ user, postId }: any) => {
       flatListRef.current?.scrollToEnd({ animated: true })
     } catch (error) {
       console.error("Error al crear el comnetario!", error.message)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -161,7 +159,7 @@ const CommentContentModal = ({ user, postId }: any) => {
             value={content}
           />
         </View>
-        <Pressable onPress={handleCreateComments}>
+        <Pressable onPress={handleCreateComments} disabled={isButtonDisabled}  style={{ opacity: isButtonDisabled ? 0.55 : 1 }}>
           <SendHorizontal size={35} color={"black"} />
         </Pressable>
       </View>

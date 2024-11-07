@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react"
 import { gql, useMutation } from "@apollo/client"
-import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import { Dimensions, Pressable, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { ImageUp } from "lucide-react-native"
 
 import { spacing } from "app/theme"
@@ -13,11 +13,14 @@ import { Button, Screen, Text, TextField } from "app/components"
 import { Post } from "./interface/Post"
 import { FRAGMENT_POST } from "../HomeScreen/graphql/posts.query"
 import ImageValidateType from "app/components/ImageValidateType"
+import AnimatedPost from "./components/AnimatedPost"
 
 interface CreatePostFormScreenProps extends TabScreenProps<"CreatePostFormScreen"> {}
 
+const { width, height } = Dimensions.get("window")
+
 export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) => {
-  const { _id: userId, name , avatar} = route.params.userSession
+  const { _id: userId, name, avatar } = route.params.userSession
 
   const [createPost] = useMutation(CREATE_POST)
 
@@ -27,21 +30,21 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
   const [contentDescription, setContentDescription] = useState("")
   const [selectedImage, setSelectedImage] = useState("")
   const [ispermision, setIspermision] = useState(false)
-
+  const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
     if (ispermision) {
-      getLibraryPermision() 
+      getLibraryPermision()
     }
   }, [ispermision])
-  // const isButtonDisabled = !contentTitle || !contentDescription || isLoading
+  const isButtonDisabled = !(contentTitle || contentDescription || selectedImage) || isLoading
 
   const updateCache = (cache: any, CreatePost: Post) => {
     try {
       const newPost = {
         __typename: "Post",
         id: CreatePost.id,
-        title: CreatePost.title,
-        content: CreatePost.content,
+        title: CreatePost.title || "",
+        content: CreatePost.content || "",
         imageUrl: CreatePost.imageUrl || "",
         createdAt: CreatePost.createdAt,
         updatedAt: CreatePost.updatedAt,
@@ -51,22 +54,22 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
           name,
           avatar: avatar || "",
         },
-        commentCount:0,
+        commentCount: 0,
         likeCount: 0,
       }
-   
+
       cache.modify({
-        fields:{
-          GetPosts( existingPosts = []){
+        fields: {
+          GetPosts(existingPosts = []) {
             const newPostRef = cache.writeFragment({
               data: newPost,
-              fragment: FRAGMENT_POST
+              fragment: FRAGMENT_POST,
             })
             return [newPostRef, ...existingPosts].sort(
               (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
             )
-          }
-        }
+          },
+        },
       })
     } catch (error) {
       throw new Error(`Error al escribir el post en el cache: ${error}`)
@@ -75,15 +78,15 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
 
   const handleCreatePost = async () => {
     let image = ""
-    // setIsLoading(true)
+    setIsLoading(true)
     try {
       if (selectedImage) image = await handleimageUpload(selectedImage)
 
       await createPost({
         variables: {
           filter: {
-            title: contentTitle,
-            content: contentDescription,
+            title: contentTitle || "",
+            content: contentDescription || "",
             imageUrl: image || "",
           },
         },
@@ -92,8 +95,8 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
           CreatePost: {
             __typename: "Post",
             id: idFake,
-            title: contentTitle,
-            content: contentDescription,
+            title: contentTitle || "",
+            content: contentDescription || "",
             imageUrl: image || "",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -103,16 +106,14 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
               name,
               avatar: avatar || "",
             },
-            commentCount:0,
+            commentCount: 0,
             likeCount: 0,
-            
           },
         },
 
         update(cache, { data: { CreatePost } }) {
           if (CreatePost) {
             updateCache(cache, CreatePost)
-            
           }
         },
       })
@@ -122,7 +123,8 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
       navigate("ListPostScreen")
     } catch (error) {
       console.error("Error al crear el post!", error)
-      // setIsLoading(false)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -134,6 +136,21 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
   return (
     <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
       <Text style={$title} preset="heading" text="Create Post" />
+
+      <TouchableOpacity
+        onPress={async () => {
+          setIspermision(true)
+          const image = await launchImageLibrary()
+          setSelectedImage(image)
+        }}
+      >
+        <ImageUp size={50} color={"black"} />
+      </TouchableOpacity>
+      {selectedImage && (
+        <View style={$imageSelected}>
+          <ImageValidateType image={selectedImage} width={"100%"} height={200} />
+        </View>
+      )}
       <View style={$containerTextField}>
         <TextField
           value={contentTitle}
@@ -162,57 +179,57 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
         />
       </View>
 
-      <View>
-        <TouchableOpacity
-          onPress={async () => {
-            setIspermision(true)
-            const image = await launchImageLibrary()
-            setSelectedImage(image)
-          }}
-        >
-          <ImageUp size={50} color={"black"} />
-        </TouchableOpacity>
-        {selectedImage && (
-          <View style={$imageSelected}>
-            <ImageValidateType image={selectedImage} width={"100%"} height={200} />
-          </View>
-        )}
+       { isLoading && <AnimatedPost />}
         <View style={$containerButton}>
-          <Button text="Create" onPress={handleCreatePost} />
-          <Button text="Cancel" onPress={handleCancel} />
+          <Button
+            text="Create"
+            onPress={handleCreatePost}
+            disabled={isButtonDisabled}
+            style={{ opacity: isButtonDisabled ? 0.55 : 1 , marginBottom:25}}
+          />
+          <Button text="Cancel" onPress={handleCancel} style={{ backgroundColor: "#d69393" }} />
         </View>
-      </View>
+     
     </Screen>
   )
 }
 
 const $container: ViewStyle = {
-  // paddingTop: spacing.lg + spacing.xl,
-  // paddingBottom: spacing.xxl,
-  paddingHorizontal: spacing.lg,
+  paddingHorizontal: spacing.md, // Ajuste proporcional de padding
+  paddingVertical: spacing.lg,
+  width: "100%",
 }
 
 const $title: TextStyle = {
-  marginBottom: spacing.xxl,
+  fontSize: width * 0.05,
+  marginBottom: spacing.lg,
 }
 
-const $containerTextField: ViewStyle = {}
+const $containerTextField: ViewStyle = {
+  marginBottom: spacing.md,
+  padding: spacing.sm,
+  width: width * 0.9, 
+  alignSelf: "center",
+}
 
 const $textFieldTitle: ViewStyle = {
-  marginBottom: 20,
+  marginBottom: spacing.md,
 }
 
 const $textArea: ViewStyle = {
-  marginBottom: 30,
+  marginBottom: spacing.lg,
+  height: height * 0.2, 
+  width: "100%",
 }
 
 const $containerButton: ViewStyle = {
-  height:130,
-  marginVertical:20,
-  justifyContent:'space-around'
+  height: height * 0.15,
+  marginVertical: spacing.md,
+  justifyContent: "space-around",
 }
 
 const $imageSelected: ViewStyle = {
   width: "100%",
-  marginVertical: 10,
+  height: height * 0.25,
+  marginVertical: spacing.xxl,
 }

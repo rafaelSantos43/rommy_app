@@ -1,23 +1,18 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { View, ViewStyle } from "react-native"
 import ImageValidateType from "../../../../../components/ImageValidateType"
 import { Text } from "../../../../../components/Text"
 import { EllipsisVertical } from "lucide-react-native"
 import ContentForImage from "./ContentForImage"
-import ContentFooter from "./ContentFooterPost"
+import ContentFooterPost from "./ContentFooterPost"
 import ContentForText from "./ContentForText"
-
-
-
 
 const PostCard = (props: any) => {
   const { post, setPostIdList, userSession } = props
-  const imageContent = post?.imageUrl
+  const imageContent = post?.imageUrl || false
   const nameAuthor = post?.author?.name
   const imageAuthor = post?.author?.avatar  
-  console.log(imageAuthor,'algo paso');
-  
-      
+ 
   return (
     <View style={$container}>
       <View style={$contentHeader}>
@@ -33,7 +28,7 @@ const PostCard = (props: any) => {
       ) : (
         <ContentForText post={post}/>
       )}
-      <ContentFooter post={post} setPostIdList={setPostIdList} userSession={userSession}/>
+      <ContentFooterPost post={post} setPostIdList={setPostIdList} userSession={userSession}/>
     </View>
   )
 }
