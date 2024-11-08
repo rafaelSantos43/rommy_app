@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react"
-import { gql, useMutation } from "@apollo/client"
-import { Dimensions, Pressable, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import { useMutation } from "@apollo/client"
+import { Dimensions, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { ImageUp } from "lucide-react-native"
 
 import { spacing } from "app/theme"

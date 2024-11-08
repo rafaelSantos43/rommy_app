@@ -7,8 +7,7 @@
 import {
   DarkTheme,
   DefaultTheme,
-  NavigationContainer,
-  NavigatorScreenParams, // @demo remove-current-line
+  NavigationContainer, // @demo remove-current-line
 } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
 import { observer } from "mobx-react-lite"
@@ -16,10 +15,11 @@ import React from "react"
 import { useColorScheme } from "react-native"
 import * as Screens from "app/screens"
 import Config from "../config"
-import { TabNavigator, TabParamList } from "./TabNavigator" // @demo remove-current-line
+import { TabNavigator } from "./TabNavigator" // @demo remove-current-line
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { colors } from "app/theme"
 import { useStore } from "app/store/useStore"
+import CachePanel from "app/components/CachePanel"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -39,7 +39,8 @@ export type AppStackParamList = {
   Welcome: undefined
   Login: undefined // @demo remove-current-line
   UserRegisterScreen: undefined
-  TabNavigator: { userSession: object } // @demo remove-current-line
+  TabNavigator: { userSession: object }
+  CachePanel:undefined // @demo remove-current-line
 }
 
 const exitRoutes = Config.exitRoutes
@@ -48,12 +49,14 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStack
   AppStackParamList,
   T
 >
-const Stack = createNativeStackNavigator<AppStackParamList>() 
+const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = observer(function AppStack() {
   const { session } = useStore()
-  console.log(session?.token, "-----------------") 
+  console.log(session?.token, "-----------------")
 
+
+  // Llama a logCacheContent en alguna parte de tu código para ver el caché
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, navigationBarColor: colors.background }}
@@ -65,6 +68,15 @@ const AppStack = observer(function AppStack() {
             name="TabNavigator"
             component={TabNavigator}
             initialParams={{ userSession: session }}
+          />
+
+          <Stack.Screen
+            name="CachePanel"
+            component={CachePanel}
+            options={{
+              headerShown:true
+            }}
+            // initialParams={{ userSession: session }}
           />
 
           {/* <Stack.Screen

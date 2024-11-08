@@ -35,9 +35,8 @@ const useApolloConfig = () => {
             },
             GetListLike: {
               merge(existing = [], incoming) {
-                // Fusionar likes existentes con los nuevos, evitando duplicados.
                 return [
-                  ...existing.filter(like => !incoming.some(newLike => newLike.id === like.id)),
+                  ...existing.filter((like:any) => !incoming.some((newLike:any) => newLike.id === like.id)),
                   ...incoming,
                 ];
               },

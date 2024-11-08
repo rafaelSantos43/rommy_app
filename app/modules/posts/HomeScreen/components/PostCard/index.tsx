@@ -12,6 +12,7 @@ const PostCard = (props: any) => {
   const imageContent = post?.imageUrl || false
   const nameAuthor = post?.author?.name
   const imageAuthor = post?.author?.avatar  
+
  
   return (
     <View style={$container}>
