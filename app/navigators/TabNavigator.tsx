@@ -9,7 +9,7 @@ import * as Screens from "app/screens"
 import { colors } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import ImageValidateType from "app/components/ImageValidateType"
-import { LoaderPinwheel } from "lucide-react-native"
+import { DatabaseZap, LoaderPinwheel } from "lucide-react-native"
 import { navigate } from "./navigationUtilities"
 import { SearchFrinedScreen } from "app/modules/posts/SearchFriendScreen"
 import { CreatePostFormScreen } from "app/modules/posts/CreatePostFormScreen"
@@ -82,9 +82,14 @@ export function TabNavigator({ route }) {
           headerShown: true,
           tabBarLabel: translate("demoNavigator.componentsTab"),
           headerLeft: () => (
-            <Pressable onPress={handleResetCache} style={{ paddingHorizontal: 10 }}>
-              <Icon icon="camera" color={colors.tint} size={30} />
-            </Pressable>
+            <View style={{flexDirection:'row'}}>
+              <Pressable onPress={handleResetCache} style={{ paddingHorizontal: 10 }}>
+                <Icon icon="camera" color={colors.tint} size={30} />
+              </Pressable>
+              <Pressable onPress={() => navigate("CachePanel")} style={{ paddingHorizontal: 10 }}>
+                <DatabaseZap size={30} color={colors.tint}/>
+              </Pressable>
+            </View>
           ),
           headerRight: () => (
             <View style={{ paddingHorizontal: 10 }}>

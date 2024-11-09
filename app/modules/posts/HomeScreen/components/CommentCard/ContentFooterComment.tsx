@@ -1,3 +1,4 @@
+import React from "react"
 import { Icon, Text } from "app/components"
 import { View, ViewStyle } from "react-native"
 

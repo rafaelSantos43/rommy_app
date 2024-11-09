@@ -16,7 +16,6 @@ const Stack = createNativeStackNavigator<HomeScreenNavigatorParamList>()
 
 export const HomeScreenNavigator = ({ route }) => {
   const { userSession } = route.params
-  // console.log(session?.name, "-----------------")
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, navigationBarColor: colors.background }}>

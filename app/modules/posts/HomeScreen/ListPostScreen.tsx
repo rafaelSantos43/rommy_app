@@ -19,7 +19,7 @@ import CommonModal from "app/components/CommonModal"
 import { useQuery } from "@apollo/client"
 import { POSTS } from "./graphql/posts.query"
 import PostCard from "./components/PostCard"
-import { Screen } from "app/components"
+import { Screen, Text } from "app/components"
 import CommentContentModal from "./components/CommentContentModal"
 import { HomeScreenNavigatorProps } from "./HomeScreenNavigator"
 
@@ -29,25 +29,30 @@ export interface Demo {
   data: ReactElement[]
 }
 
-export const ListPostScreen: FC<HomeScreenNavigatorProps<"ListPostScreen">> = ({ route })  => {
+export const ListPostScreen: FC<HomeScreenNavigatorProps<"ListPostScreen">> = ({ route }) => {
   //  const [refreshing, setRefreshing] = React.useState(false)
-  const { userSession} = route.params
+  const { userSession } = route.params
   const [postIdList, setPostIdList] = useState("")
 
-console.log('poer qq--------------',postIdList);
-
   // const [isLoading, setIsLoading] = React.useState(false)
-  const { data } = useQuery(POSTS)
+  const { data, loading, error } = useQuery(POSTS)
+
+  if (loading) return <Text>Cargando...</Text>
+  if (error) return <Text>Error al cargar los posts: {error.message}</Text>
   return (
     <>
       <Screen style={$screenContainer} preset="fixed">
+      {data?.GetPosts?.length > 0 ? (
         <FlatList
-          data={data?.GetPosts}
+          data={data.GetPosts}
           keyExtractor={(post) => post.id}
           renderItem={({ item: post }) => (
-            <PostCard post={post} userSession={userSession}  setPostIdList={setPostIdList}/>
+            <PostCard post={post} userSession={userSession} setPostIdList={setPostIdList} />
           )}
         />
+      ) : (
+        <Text>No hay posts disponibles.</Text>
+      )}
       </Screen>
       <CommonModal>
         <CommentContentModal user={userSession} postId={postIdList} />
@@ -60,5 +65,3 @@ const $screenContainer: ViewStyle = {
   flex: 1,
   paddingHorizontal: 15,
 }
-
-
