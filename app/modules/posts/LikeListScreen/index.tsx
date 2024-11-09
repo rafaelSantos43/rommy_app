@@ -1,26 +1,21 @@
 import React from "react"
 import { Card, Icon, Screen, Text } from "app/components"
 import { FlatList, View, ViewStyle } from "react-native"
-import { GET_LIST_LIKE } from "../graphql/GetListLike.query"
 import ImageValidateType from "app/components/ImageValidateType"
 import { SquarePlus } from "lucide-react-native"
-import { useApolloClient } from "@apollo/client"
+
 
 export const LikeListScreen = ({ route }) => {
-  const {postId} = route.params
-  const client = useApolloClient()
-  const {GetListLike}:any = client.cache.readQuery({
-    query: GET_LIST_LIKE,
-     variables: {postId}
-   })
-
+  const {data} = route.params
+  console.log(data?.GetListLike);
+  
   return (
     <Screen
       style={$screenContainer}
       preset="fixed"
     >
       <FlatList
-        data={GetListLike}
+        data={data?.GetListLike}
         keyExtractor={(like) => like.id}
         renderItem={({ item: like }) => (
           <Card

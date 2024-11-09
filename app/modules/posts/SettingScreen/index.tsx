@@ -20,7 +20,7 @@ import { X } from "lucide-react-native"
 export const SettingScreen: FC<TabScreenProps<"Settings">> = (_props) => {
   const { setRemoveSession } = useStore()
   const [open, setOpen] = React.useState(false)
-
+  
   return (
     <Drawer
       open={open}
@@ -40,6 +40,7 @@ export const SettingScreen: FC<TabScreenProps<"Settings">> = (_props) => {
       <View style={ {top:25, backgroundColor: colors.background }}>
           <View style={{ alignSelf:'flex-end'}}>
             <DrawerIconButton onPress={() => setOpen((prevOpen) => !prevOpen)}/>
+            <Button text="salir" onPress={setRemoveSession}/>
           </View>
       </View>
     </Drawer>

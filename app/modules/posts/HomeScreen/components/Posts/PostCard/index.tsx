@@ -1,11 +1,12 @@
 import React from "react"
 import { View, ViewStyle } from "react-native"
-import ImageValidateType from "../../../../../components/ImageValidateType"
-import { Text } from "../../../../../components/Text"
+import ImageValidateType from "app/components/ImageValidateType"
+import { Text } from "app/components/Text"
 import { EllipsisVertical } from "lucide-react-native"
 import ContentForImage from "./ContentForImage"
 import ContentFooterPost from "./ContentFooterPost"
 import ContentForText from "./ContentForText"
+
 
 const PostCard = (props: any) => {
   const { post, setPostIdList, userSession } = props

@@ -7,7 +7,7 @@ const useApolloConfig = () => {
   const {session} = useStore()
 
   const httpLink = createHttpLink({
-    uri: "http://10.2.20.100:4000/graphql"
+    uri: "http://192.168.1.3:4000/graphql"
   })
   const authLink = setContext((_, { headers }) => {
     return {
@@ -23,9 +23,15 @@ const useApolloConfig = () => {
       typePolicies: {
         Query: {
           fields: {
+            GetListLike: {
+              merge(existing, incoming) {
+                // Sobrescribir con la nueva lista de likes (incoming)
+                return incoming;
+              },
+            },
             GetComments: {
               merge(existing = [], incoming) {
-              
+                // Filtra duplicados solo si es necesario
                 const merged = [...existing, ...incoming].filter(
                   (item, index, self) =>
                     index === self.findIndex((t) => t.__ref === item.__ref)
@@ -33,19 +39,12 @@ const useApolloConfig = () => {
                 return merged;
               },
             },
-            GetListLike: {
-              merge(existing = [], incoming) {
-                return [
-                  ...existing.filter((like:any) => !incoming.some((newLike:any) => newLike.id === like.id)),
-                  ...incoming,
-                ];
-              },
-            }
           },
         },
       },
     }),
-  })
+  });
+  
 
   return client
 }

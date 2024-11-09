@@ -3,7 +3,7 @@ import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navig
 
 import { colors } from "app/theme"
 import { ListPostScreen } from "./ListPostScreen"
-import { LikeListScreen } from "./LikeListScreen"
+import { LikeListScreen } from "../LikeListScreen"
 
 export type HomeScreenNavigatorParamList = {
   ListPostScreen: { userSession: object }

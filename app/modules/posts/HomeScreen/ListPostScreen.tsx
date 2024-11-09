@@ -17,10 +17,10 @@ import { FlatList, ViewStyle } from "react-native"
 
 import CommonModal from "app/components/CommonModal"
 import { useQuery } from "@apollo/client"
-import { POSTS } from "./graphql/posts.query"
-import PostCard from "./components/PostCard"
+import { POSTS } from "./components/Posts/graphql/posts.query"
+import PostCard from "./components/Posts/PostCard"
 import { Screen, Text } from "app/components"
-import CommentContentModal from "./components/CommentContentModal"
+import CommentList from "./components/Comments/CommentList"
 import { HomeScreenNavigatorProps } from "./HomeScreenNavigator"
 
 export interface Demo {
@@ -55,7 +55,7 @@ export const ListPostScreen: FC<HomeScreenNavigatorProps<"ListPostScreen">> = ({
       )}
       </Screen>
       <CommonModal>
-        <CommentContentModal user={userSession} postId={postIdList} />
+        <CommentList user={userSession} postId={postIdList} />
       </CommonModal>
     </>
   )

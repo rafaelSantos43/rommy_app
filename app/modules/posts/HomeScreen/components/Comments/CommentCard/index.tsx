@@ -8,8 +8,9 @@ import ContentFooterComment from "./ContentFooterComment"
 import ImageValidateType from "app/components/ImageValidateType"
 
 const CommentCard = ({comment}:any) => {
-  console.log(comment,'hallloq');
-  
+  const avatar = comment?.author?.avatar
+  const name = comment?.author.name
+  const content = comment.content
   //const createdAt = Number(comment?.createdAt)
   //const created = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
 
@@ -18,12 +19,12 @@ const CommentCard = ({comment}:any) => {
       style={{borderWidth:0, borderRadius:0,}}
       LeftComponent={
       <View>
-        <ImageValidateType image={comment.author.avatar} width={40} height={40} radius={50}/>
+        <ImageValidateType image={avatar} width={40} height={40} radius={50}/>
       </View>
       }
       HeadingComponent={
         <View>
-          <Text style={{fontWeight:'bold'}}>{comment.author?.name ? comment.author.name : 'Author Desconocido'}</Text>
+          <Text style={{fontWeight:'bold'}}>{name ? name : 'Author Desconocido'}</Text>
           {/* <Text style={{fontSize:11, color:'gray', top:-8}}>{created}</Text> */}
         </View>
       }
@@ -35,7 +36,7 @@ const CommentCard = ({comment}:any) => {
       }
      ContentComponent={
       <View style={{backgroundColor:'#F6F4F4', paddingHorizontal:5, borderRadius:5}}>
-        <Text style={{color:'#736F6F'}}>{comment.content}</Text>
+        <Text style={{color:'#736F6F'}}>{content}</Text>
       </View>
      }
       

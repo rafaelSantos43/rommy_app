@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client"
+import { gql } from "@apollo/client";
 
 export const FRAGMENT_POST = gql`
   fragment NewPost on Post {
@@ -16,24 +16,13 @@ export const FRAGMENT_POST = gql`
     createdAt
     updatedAt
   }
-`
+`;
 
 export const POSTS = gql`
   query GetPosts {
     GetPosts {
-      id
-      content
-      title
-      imageUrl
-      author {
-        id
-        name 
-        avatar
-      }
-      commentCount
-      likeCount
-      createdAt
-      updatedAt
+      ...NewPost
     }
   }
+  ${FRAGMENT_POST}
 `

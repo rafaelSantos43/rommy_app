@@ -2,19 +2,18 @@ import React from "react"
 import { TouchableOpacity, View, ViewStyle } from "react-native"
 import { Icon, Text } from "app/components"
 import { navigate } from "app/navigators"
-import useListCount from "./hooks/useListCount"
+import useListCount from "./useLikeCountList"
+import { GET_LIST_LIKE } from "../../../../graphql/GetListLike.query"
+import { useQuery } from "@apollo/client"
 
 const LikesCount = ({userSession, likeCount, postId }: any) => {
 
-   const {addLike} = useListCount(postId, userSession)
-
-  const handleAddLike = async () => {
-    try {
-      await addLike()
-    } catch (error) {
-      console.error(`Error al dar like ${error}`)
-    }
-  }
+   const {handleAddLike} = useListCount(postId, userSession)
+   const {data} = useQuery(GET_LIST_LIKE,{
+    variables: {postId},
+    fetchPolicy: "cache-and-network",
+  })
+ 
   return (
     <View style={$containerLikes}>
       <TouchableOpacity onPress={handleAddLike} style={$contentIconLike}>
@@ -23,7 +22,7 @@ const LikesCount = ({userSession, likeCount, postId }: any) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={$contentLikeList}
-        onPress={() => navigate("LikeListScreen", { postId })}
+        onPress={() => navigate("LikeListScreen", { postId, data})}
       >
         <Text style={{ fontSize: 14 }}>like List</Text>
       </TouchableOpacity>
