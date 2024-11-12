@@ -7,7 +7,7 @@ import { spacing } from "app/theme"
 import { navigate } from "app/navigators"
 import { CREATE_POST } from "app/modules/posts/CreatePostFormScreen/graphql/create_Post.mutation"
 import { getLibraryPermision, launchImageLibrary } from "app/utils/getPermisionFile"
-import { handleimageUpload } from "app/services/api/uploadApi"
+import { handleImageUpload } from "app/services/api/uploadApi"
 import { TabScreenProps } from "app/navigators/TabNavigator"
 import { Button, Screen, Text, TextField } from "app/components"
 import { Post } from "./interface/Post"
@@ -80,7 +80,7 @@ export const CreatePostFormScreen: FC<CreatePostFormScreenProps> = ({ route }) =
     let image = ""
     setIsLoading(true)
     try {
-      if (selectedImage) image = await handleimageUpload(selectedImage)
+      if (selectedImage) image = await handleImageUpload(selectedImage)
 
       await createPost({
         variables: {

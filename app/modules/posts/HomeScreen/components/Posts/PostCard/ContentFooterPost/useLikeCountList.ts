@@ -1,6 +1,6 @@
 import {  useMutation } from "@apollo/client"
 import { ADD_LIKE } from "app/modules/posts/HomeScreen/graphql/addLike_post.mutation"
-import { GET_LIST_LIKE } from "app/modules/posts/HomeScreen/graphql/GetListLike.query"
+import { GET_LIST_LIKE } from "app/modules/posts/LikeListScreen/graphql/GetListLike.query"
 
 const useListCount = (postId: string, userSession: any) => {
   
@@ -66,17 +66,17 @@ const useListCount = (postId: string, userSession: any) => {
         update(cache, { data: { addLike } }) {
           if (!addLike) return
 
-          const { GetListLike: likeListInCacheh } = cache.readQuery({
+          const { GetListLike: likeListInCache } = cache.readQuery({
             query: GET_LIST_LIKE,
             variables: { postId },
           })
 
-          const hasLiked = likeListInCacheh.some((like: any) => like.author.id === userSession._id)
+          const hasLiked = likeListInCache.some((like: any) => like.author.id === userSession._id)
 
           if (hasLiked) {
-            removeLikeInCache(cache, likeListInCacheh)
+            removeLikeInCache(cache, likeListInCache)
           } else {
-            addLikeInCache(cache, likeListInCacheh, addLike)
+            addLikeInCache(cache, likeListInCache, addLike)
           }
         },
         optimisticResponse: {

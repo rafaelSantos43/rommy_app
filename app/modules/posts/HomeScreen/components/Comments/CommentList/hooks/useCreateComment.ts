@@ -1,6 +1,6 @@
 import { useState } from "react"
-import useCreateComments from "../graphql/create_commet.mutation"
-import { COMMENTS } from "../graphql/comments.query"
+import useCreateComments from "../../graphql/create_commet.mutation"
+import { COMMENTS } from "../../graphql/comments.query"
 
 const useCreateComment = ({ postId, user, flatListRef }: any) => {
   const { _id: userId, name, avatar } = user
@@ -23,6 +23,7 @@ const useCreateComment = ({ postId, user, flatListRef }: any) => {
           name,
           avatar,
         },
+        likeCount:0,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
@@ -73,6 +74,8 @@ const useCreateComment = ({ postId, user, flatListRef }: any) => {
           })
 
           updateCommentsInCache(cache, CreateComment, existingComments)
+          setContent("")
+          flatListRef.current?.scrollToEnd({ animated: true })
         },
 
         optimisticResponse: {
@@ -88,13 +91,12 @@ const useCreateComment = ({ postId, user, flatListRef }: any) => {
               name,
               avatar,
             },
+            likeCount:0,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           },
         },
       })
-      setContent("")
-      flatListRef.current?.scrollToEnd({ animated: true })
     } catch (error) {
       console.error("Error al crear el comnetario!", error.message)
     } finally {

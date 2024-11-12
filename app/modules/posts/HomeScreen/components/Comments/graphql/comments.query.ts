@@ -26,6 +26,7 @@ export const COMMENTS = gql`
         name
         avatar
       }
+      likeCount  
       createdAt
       updatedAt
     }

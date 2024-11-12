@@ -2,7 +2,7 @@ import { Pressable, View } from "react-native"
 import { SendHorizontal } from "lucide-react-native"
 
 import { TextField } from "app/components"
-import useCreateComment from "./useCreateComment"
+import useCreateComment from "./hooks/useCreateComment"
 
 const FieldCreateComment = ({ postId, user, flatListRef }: any) => {
     

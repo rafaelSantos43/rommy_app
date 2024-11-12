@@ -55,7 +55,7 @@ export const ListPostScreen: FC<HomeScreenNavigatorProps<"ListPostScreen">> = ({
       )}
       </Screen>
       <CommonModal>
-        <CommentList user={userSession} postId={postIdList} />
+        <CommentList user={userSession} postId={postIdList} userSession={userSession}/>
       </CommonModal>
     </>
   )

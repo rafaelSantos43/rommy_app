@@ -1,16 +1,14 @@
-import React, { useRef, useState } from "react"
+import React, { useRef } from "react"
 import { useQuery, useReactiveVar } from "@apollo/client"
 import { COMMENTS } from "app/modules/posts/HomeScreen/components/Comments/graphql/comments.query"
 import { openModalVar } from "app/store/reactiveVars"
-import { SendHorizontal, X } from "lucide-react-native"
+import {  X } from "lucide-react-native"
 import { StyleSheet, Pressable, View, FlatList } from "react-native"
 
-import { Text, TextField } from "app/components"
-import useCreateComments from "app/modules/posts/HomeScreen/components/Comments/graphql/create_commet.mutation"
 import CommentCard from "../CommentCard"
 import FieldCreateComment from "./FieldCreateComment"
 
-const CommentContentModal = ({ user, postId }: any) => {
+const CommentContentModal = ({ user, postId, userSession }: any) => {
   
   const { data } = useQuery(COMMENTS, {
     variables: {
@@ -33,7 +31,7 @@ const CommentContentModal = ({ user, postId }: any) => {
           style={{ width: "100%", top: 10, marginBottom: 60 }}
           data={data?.GetComments}
           keyExtractor={(item) => item.id}
-          renderItem={({ item: comment }) => <CommentCard comment={comment} />}
+          renderItem={({ item: comment }) => <CommentCard comment={comment} postId={postId} userSession={userSession}/>}
           getItemLayout={(data, index) => ({
             length: ITEM_HEIGHT,
             offset: ITEM_HEIGHT * index,

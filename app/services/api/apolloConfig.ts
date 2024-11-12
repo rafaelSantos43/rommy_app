@@ -29,6 +29,27 @@ const useApolloConfig = () => {
                 return incoming;
               },
             },
+            GetListLikeComment: {
+              merge(existing = [], incoming) {
+                // Combina los likes existentes con los nuevos, evitando duplicados
+                const mergedLikes = [
+                  ...existing,
+                  ...incoming.filter(
+                    (newLike) =>
+                      !existing.some(
+                        (existingLike) => existingLike.__ref === newLike.__ref
+                      )
+                  ),
+                ];
+                return mergedLikes;
+              },
+            },
+            // GetListLikeComment: {
+            //   merge(existing, incoming) {
+            //     // Sobrescribir con la nueva lista de likes (incoming)
+            //     return incoming;
+            //   },
+            // },
             GetComments: {
               merge(existing = [], incoming) {
                 // Filtra duplicados solo si es necesario

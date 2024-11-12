@@ -1,5 +1,6 @@
 import { View, ViewStyle } from "react-native"
 import ImageValidateType from "app/components/ImageValidateType"
+import { Text } from "app/components"
 
 const ContentForImage = (props: any) => {
   const {post} = props
@@ -7,6 +8,7 @@ const ContentForImage = (props: any) => {
   
   return (
       <View style={$contentCenter}>
+        <Text style={{fontSize:15, bottom:15, fontWeight:'bold', color:'gray'}}>{post.title}</Text>
         <ImageValidateType image={imageContent} width={'100%'} height={'100%'} radius={20}/>
       </View>
   )
@@ -15,7 +17,6 @@ const ContentForImage = (props: any) => {
 export default ContentForImage
 
 const $contentCenter: ViewStyle = {
-  
   borderColor:'gray',
   borderRadius:20,
   marginVertical:10,

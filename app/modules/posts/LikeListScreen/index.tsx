@@ -5,9 +5,8 @@ import ImageValidateType from "app/components/ImageValidateType"
 import { SquarePlus } from "lucide-react-native"
 
 
-export const LikeListScreen = ({ route }) => {
-  const {data} = route.params
-  console.log(data?.GetListLike);
+export const LikeListScreen = ({ route }:any) => {
+  const {likeList} = route.params
   
   return (
     <Screen
@@ -15,7 +14,7 @@ export const LikeListScreen = ({ route }) => {
       preset="fixed"
     >
       <FlatList
-        data={data?.GetListLike}
+        data={likeList}
         keyExtractor={(like) => like.id}
         renderItem={({ item: like }) => (
           <Card

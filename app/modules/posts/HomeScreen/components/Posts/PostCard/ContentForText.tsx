@@ -1,7 +1,6 @@
 import { Text } from "app/components"
 import { View, ViewStyle } from "react-native"
 
-
 const ContentForText = (props: any) => {
   const {post } = props
   const title = post?.title

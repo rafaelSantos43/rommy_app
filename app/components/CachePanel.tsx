@@ -5,8 +5,7 @@ import { useApolloClient } from '@apollo/client';
 const CachePanel = () => {
   const client = useApolloClient();
   const [cacheContent, setCacheContent] = useState(null);
- 
-
+  
   const fetchCache = () => {
     const cacheData = client.cache.extract();
     setCacheContent(JSON.stringify(cacheData, null, 2));
