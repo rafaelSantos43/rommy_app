@@ -15,7 +15,7 @@ const CommentContentModal = ({ user, postId, userSession }: any) => {
       postId,
     },
   })
-
+  
   const modalVisible = useReactiveVar(openModalVar)
   const flatListRef = useRef(null)
   const ITEM_HEIGHT = 100

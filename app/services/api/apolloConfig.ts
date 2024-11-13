@@ -7,7 +7,7 @@ const useApolloConfig = () => {
   const {session} = useStore()
 
   const httpLink = createHttpLink({
-    uri: "http://192.168.1.3:4000/graphql"
+    uri: "http://10.2.20.100:4000/graphql"
   })
   const authLink = setContext((_, { headers }) => {
     return {
@@ -29,9 +29,23 @@ const useApolloConfig = () => {
                 return incoming;
               },
             },
+            // GetListLikeComment: {
+            //   merge(existing = [], incoming) {
+            //     // Combina los likes existentes con los nuevos, evitando duplicados
+            //     const mergedLikes = [
+            //       ...existing,
+            //       ...incoming.filter(
+            //         (newLike) =>
+            //           !existing.some(
+            //             (existingLike) => existingLike.__ref === newLike.__ref
+            //           )
+            //       ),
+            //     ];
+            //     return mergedLikes;
+            //   },
+            // },
             GetListLikeComment: {
               merge(existing = [], incoming) {
-                // Combina los likes existentes con los nuevos, evitando duplicados
                 const mergedLikes = [
                   ...existing,
                   ...incoming.filter(
@@ -62,6 +76,7 @@ const useApolloConfig = () => {
             },
           },
         },
+        
       },
     }),
   });
@@ -69,15 +84,5 @@ const useApolloConfig = () => {
 
   return client
 }
-// cache: new InMemoryCache({
-//   typePolicies: {
-//     Query: {
-//       fields: {
-//         GetComments: {
-//           keyArgs: ['postId'], // Cache los comentarios en función del postId
-//         },
-//       },
-//     },
-//   }, 
-// }),
+
 export default useApolloConfig

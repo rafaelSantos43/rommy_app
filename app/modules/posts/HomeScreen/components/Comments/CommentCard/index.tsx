@@ -3,7 +3,7 @@ import { Card, Text } from "app/components"
 import { TouchableOpacity, View } from "react-native"
 
 import { Trash2 } from "lucide-react-native"
-import {formatDistanceToNow} from 'date-fns'
+// import {formatDistanceToNow} from 'date-fns'
 import ContentFooterComment from "./ContentFooterComment"
 import ImageValidateType from "app/components/ImageValidateType"
 import useDeleteComment from "../CommentList/hooks/useDeleteComment"
@@ -13,8 +13,8 @@ const CommentCard = ({comment, postId, userSession}:any) => {
   const name = comment?.author.name
   const content = comment.content
   const {handleDeleteComment} = useDeleteComment({commentId: comment.id, postId})
-  //const createdAt = Number(comment?.createdAt)
-  //const created = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
+  // const createdAt = Number(comment?.createdAt)
+  // const created = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
 
   return (
     <Card
