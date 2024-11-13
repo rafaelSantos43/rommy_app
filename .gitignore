@@ -44,8 +44,8 @@ buck-out/
 *.keystore
 !debug.keystore
 
-app/services/apolloConfig/
-app/services/oauth/
+app/services/api/apolloConfig.ts
+app/services/api/oauth.ts
 
 # fastlane
 #
