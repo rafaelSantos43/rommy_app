@@ -239,6 +239,6 @@ const handleAddLikeComment = async () => {
   
 
   return {
-    handleAddLikeComment
+    handleAddLikeComment,
   }
 }

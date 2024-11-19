@@ -58,6 +58,7 @@ const useListCount = (postId: string, userSession: any) => {
   }
 
   const [addLike] = useMutation(ADD_LIKE)
+  console.log('jajaja');
 
   const handleAddLike = async () => {
     try {
