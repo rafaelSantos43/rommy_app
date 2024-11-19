@@ -1,6 +1,14 @@
 import React, { FC } from "react"
 import * as Application from "expo-application"
-import { Platform, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import {
+  ImageBackground,
+  Platform,
+  StyleSheet,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native"
 
 import { Drawer } from "react-native-drawer-layout"
 
@@ -11,16 +19,19 @@ import { colors, spacing } from "app/theme"
 import { isRTL } from "app/i18n"
 import { DrawerIconButton } from "app/screens/DemoShowroomScreen/DrawerIconButton"
 import { X } from "lucide-react-native"
+import ImageValidateType from "app/components/ImageValidateType"
 
 /**
  * @param {string} url - The URL to open in the browser.
  * @returns {void} - No return value.
  */
 
-export const SettingScreen: FC<TabScreenProps<"Settings">> = (_props) => {
+export const SettingScreen: FC<TabScreenProps<"Settings">> = ({ route }) => {
   const { setRemoveSession } = useStore()
+  const { userSession } = route.params
   const [open, setOpen] = React.useState(false)
-  
+  const imageFake =
+    "https://images.unsplash.com/photo-1427694012323-fb5e8b0c165b?q=80&w=889&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   return (
     <Drawer
       open={open}
@@ -28,72 +39,63 @@ export const SettingScreen: FC<TabScreenProps<"Settings">> = (_props) => {
       onClose={() => setOpen(false)}
       drawerType="front"
       drawerPosition="right"
-      drawerStyle={{right:0}}
+      drawerStyle={{ right: 0 }}
       renderDrawerContent={() => {
         return (
-          <TouchableOpacity onPress={() => setOpen(false)} style={ {top:30}}>
-            <X size={30} color='black' style={{alignSelf:'flex-end', right:10}} />
+          <TouchableOpacity onPress={() => setOpen(false)} style={{ top: 30 }}>
+            <X size={30} color="black" style={{ alignSelf: "flex-end", right: 10 }} />
+            <Button text="salir" onPress={setRemoveSession} />
           </TouchableOpacity>
         )
       }}
     >
-      <View style={ {top:25, backgroundColor: colors.background }}>
-          <View style={{ alignSelf:'flex-end'}}>
-            <DrawerIconButton onPress={() => setOpen((prevOpen) => !prevOpen)}/>
-            <Button text="salir" onPress={setRemoveSession}/>
-          </View>
+      <View style={{ top: 25, backgroundColor: colors.background }}>
+        <View>
+          <ImageBackground src={imageFake} style={{ width: "100%", height: 200 }}>
+            <View style={{ alignSelf: "flex-end" }}>
+              <DrawerIconButton onPress={() => setOpen((prevOpen) => !prevOpen)} />
+            </View>
+            <View
+              style={{
+                alignSelf: "center",
+                top: 110,
+                borderWidth: 2,
+                borderColor: "white",
+                borderRadius: 50,
+              }}
+            >
+              <ImageValidateType image={userSession?.avatar} width={70} height={70} radius={50} />
+            </View>
+          </ImageBackground>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            marginTop: 7,
+          }}
+        >
+          <Text>fallow</Text>
+          <Text>fallowing</Text>
+        </View>
+        <View
+          style={{ justifyContent: "center", alignItems: "center", top: 10, flexDirection: "row" }}
+        >
+          <Text style={{ fontSize: 13, fontWeight: "bold", color: "gray" }}>
+            {userSession.name}
+          </Text>
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              marginLeft: 4,
+              backgroundColor: "green",
+              borderRadius: 50,
+            }}
+          ></View>
+        </View>
       </View>
     </Drawer>
   )
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 8,
-  },
-  buttons: {
-    gap: 8,
-  },
-})
-const $container: ViewStyle = {
-  paddingTop: spacing.lg + spacing.xl,
-  paddingBottom: spacing.xxl,
-  paddingHorizontal: spacing.lg,
-}
-
-const $title: TextStyle = {
-  marginBottom: spacing.xxl,
-}
-
-const $reportBugsLink: TextStyle = {
-  color: colors.tint,
-  marginBottom: spacing.lg,
-  alignSelf: isRTL ? "flex-start" : "flex-end",
-}
-
-const $item: ViewStyle = {
-  marginBottom: spacing.md,
-}
-
-const $itemsContainer: ViewStyle = {
-  marginBottom: spacing.xl,
-}
-
-const $button: ViewStyle = {
-  marginBottom: spacing.xs,
-}
-
-const $buttonContainer: ViewStyle = {
-  marginBottom: spacing.md,
-}
-
-const $hint: TextStyle = {
-  color: colors.palette.neutral600,
-  fontSize: 12,
-  lineHeight: 15,
-  paddingBottom: spacing.lg,
-}
-
-// @demo remove-file

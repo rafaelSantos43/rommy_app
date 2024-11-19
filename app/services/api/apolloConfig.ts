@@ -7,7 +7,7 @@ const useApolloConfig = () => {
   const {session} = useStore()
 
   const httpLink = createHttpLink({
-    uri: "http://192.168.1.3:4000/graphql"
+    uri: "http://192.168.1.5:4000/graphql"
   })
   const authLink = setContext((_, { headers }) => {
     return {
@@ -31,7 +31,6 @@ const useApolloConfig = () => {
             },
             GetListLikeComment: {
               merge(existing = [], incoming) {
-                // Combina los likes existentes con los nuevos, evitando duplicados
                 const mergedLikes = [
                   ...existing,
                   ...incoming.filter(
@@ -61,6 +60,10 @@ const useApolloConfig = () => {
               },
             },
           },
+        },
+
+        GetListLikeComment: {
+          keyFields: ["id"], // Normaliza usando el campo `id`
         },
       },
     }),

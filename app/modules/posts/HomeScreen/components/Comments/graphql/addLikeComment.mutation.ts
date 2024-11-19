@@ -1,22 +1,22 @@
-import { gql, useMutation } from "@apollo/client"
+import { gql, useMutation, Reference } from "@apollo/client"
 import { GET_LIST_LIKE_COMMENT } from "app/modules/posts/LikeListScreen/graphql/GetListLikeComment.query"
 
 export const ADD_LIKE_COMMENT = gql`
   mutation addLikeComment($commentId: ID!) {
     addLikeComment(commentId: $commentId) {
-      content
       id
+      content
       likeCount
       author {
+        id
         name
         avatar
-        id
       }
     }
   }
 `
 
-const removeLikeInCache = (cache: any, likeListInCacheh: any, commentId:any, userSession:any) => {
+const removeLikeInCache = (cache: any, commentId:any, userSession:any) => {
   const postCacheId = cache.identify({ __typename: "Comment", id: commentId })
  cache.modify({
     id: postCacheId,
@@ -24,54 +24,30 @@ const removeLikeInCache = (cache: any, likeListInCacheh: any, commentId:any, use
       likeCount(existingLike = 0) {
         return Math.max(existingLike - 1, 0)
       },
-      GetListLikeComment(existingLike = []) {
-        return existingLike.filter(
-          (like) => like.author?.id !== userSession._id
-        );
-      },
     },
   })
 
-    // cache.modify({
-    //   fields:{
-    //     GetListLikeComment(existingLike = []){
-    //       return existingLike.filter(
-    //         (like:any) => like.author?.id !== userSession._id
-    //       );
-    //     }
-    //   }
-    // })
+    cache.modify({
+      fields:{
+        GetListLikeComment(existingLike = []){
+          return existingLike.filter(
+            (like:any) => like.author?.id !== userSession._id
+          );
+        }
+      }
+    })
  
-  
-  // cache.writeQuery({
-  //   query: GET_LIST_LIKE_COMMENT,
-  //   variables: { commentId },
-  //   data: {
-  //     GetListLikeComment: likeListInCacheh.filter((like) => like.author.id !== userSession._id),
-  //   },
-  // })
-
-  
- // return responseIncache
 }
 
-const addLikeInCache = (cache: any, likeListInCache: any, addLikeComment: any, commentId:any) => {
-//  console.log(likeListInCache,'jajajjaj');
-  
-  
+const addLikeInCache = (cache: any,  addLikeComment: any, commentId:any) => {
+    
   const postCacheId = cache.identify({ __typename: "Comment", id: commentId })
   const newLike = {
     __typename: "LikeComment",
-    id: addLikeComment.id || `temp-${Date.now()}`,
-    content:addLikeComment.content,
     author: {
       __typename: "User",
-      id: addLikeComment.author.id,
-      name: addLikeComment.author.name,
-      avatar: addLikeComment.author.avatar,
+      id:addLikeComment.author.id
     },
-    createdAt: new Date().toString(),
-    updatedAt: new Date().toString(),
   }
 
   cache.modify({
@@ -81,56 +57,96 @@ const addLikeInCache = (cache: any, likeListInCache: any, addLikeComment: any, c
         return existingLike + 1
       },
     },
-
-    GetListLikeComment(existingLike = []) {
-      // Evitar duplicados
-      if (existingLike.some((like) => like.id === newLike.id)) {
-        return existingLike;
-      }
-      return [...existingLike, newLike];
-    },
   })
 
-
-  // cache.modify({
-  //   fields:{
-  //     GetListLikeComment( existingLike = []){
-  //       console.log('esto es lo que hay');
+  cache.modify({
+    fields:{
+      GetListLikeComment( existingLike = []){ 
+        console.log(existingLike,'siiii');
         
-  //       return [...existingLike, newLike]
-  //     }
-  //   }
-  // })
+        return [...existingLike, newLike]
+      }
+    }
+  })
 }
 
 
 export const useAddLikeComment = ({ commentId, userSession }: any) => {
+  
   const [addLikeComment] = useMutation(ADD_LIKE_COMMENT)
 
-  const handleAddLikeComment = async () => {
+const handleAddLikeComment = async () => {
     try {
       await addLikeComment({
         variables: { commentId },
         update(cache, {data:{addLikeComment}}) {
           if(!addLikeComment) return
           
-          const {GetListLikeComment: likeListInCache} = cache.readQuery({
+          const dataInCache = cache.readQuery({
             query:GET_LIST_LIKE_COMMENT,
             variables:{ commentId }
           })
+        
+          const likeListInCache = dataInCache?.GetListLikeComment || [];
+          const existingLikeIndex = likeListInCache.findIndex(
+            (like: any) => like.author.id === userSession._id
+          )    
           
-          const hasLiked = likeListInCache.some((like:any) => like.author.id ===  userSession._id)
+          if (existingLikeIndex !== -1) {
+            const updatedLikes = likeListInCache.filter(
+              (like: any) => like.author.id !== userSession._id
+            );
 
-          if (hasLiked) {
-            console.log('ya esta en el cache');
-            removeLikeInCache(cache, likeListInCache, commentId, userSession)
+            
+            
+            // Escribir el nuevo estado de los likes en el cache, solo eliminando el like del usuario
+            const result = cache.writeQuery({
+              query: GET_LIST_LIKE_COMMENT,
+              variables: { commentId },
+              data: {
+                GetListLikeComment: updatedLikes,
+              },
+            });
+            console.log(result,'jjajjjaja');
           } else {
-            console.log('no esta en el cache');
-            addLikeInCache(cache, likeListInCache, addLikeComment, commentId)
+            
+            const newLike = {
+              __typename: "LikeComment",
+              id: addLikeComment.id || `temp-${Date.now()}`, // id temporal
+
+              author: {
+                __typename: "User",
+                id: addLikeComment.author.id, // El ID del usuario actual
+                name: addLikeComment.author.name, // Nombre del usuario
+                avatar: addLikeComment.author.avatar || "", // Avatar del usuario
+              },
+              content: "", // Contenido del like (puede ser vacío o algo relevante)
+              createdAt: new Date().toISOString(), // Fecha de creación
+              updatedAt: new Date().toISOString(), // Fecha de actualización
+            };
+            
+            const newLikeRef = cache.identify(newLike)
+
+            const updateList = {
+              ...newLike,
+              newLikeRef
+            }
+            
+            
+           const result = cache.writeQuery({
+              query: GET_LIST_LIKE_COMMENT,
+              variables: { commentId },
+              data: {
+                GetListLikeComment: [...likeListInCache, updateList], // Nueva lista
+              },
+            });
+            console.log(result,'desde add');
           }
+          
+          
         },
         optimisticResponse: {
-          __typename: "addLikeComment",
+          __typename: "Mutation",
           addLikeComment: {
             __typename: "LikeComment",
             id: `temp-${Date.now()}`,
@@ -142,15 +158,85 @@ export const useAddLikeComment = ({ commentId, userSession }: any) => {
               name: userSession.name,
               avatar: userSession.avatar || "",
             },
-            createdAt: new Date().toString(),
-            updatedAt: new Date().toString(),
           },
         },
+        
       })
     } catch (error) {
       console.error("Error al eliminar el like", error)
     }
-  }
+  }  
+  // const handleAddLikeComment = async () => {
+  //   try {
+  //     await addLikeComment({
+  //       variables: { commentId },
+  //       update(cache, { data: { addLikeComment } }) {
+  //         if (!addLikeComment) return;
+  
+  //         // Leer la lista de likes actual desde el caché
+  //         const dataInCache = cache.readQuery({
+  //           query: GET_LIST_LIKE_COMMENT,
+  //           variables: { commentId },
+  //         });
+  
+  //         const likeListInCache = dataInCache?.GetListLikeComment || [];
+  
+  //         // Verificar si el usuario actual ya ha dado like
+  //         const hasLiked = likeListInCache.some((like: any) => like.author.id === userSession._id);
+  
+  //         if (hasLiked) {
+          
+  //           // Actualizar la lista de likes eliminando el like del usuario
+  //           cache.writeQuery({
+  //             query: GET_LIST_LIKE_COMMENT,
+  //             variables: { commentId },
+  //             data: {
+  //               GetListLikeComment: likeListInCache.filter(
+  //                 (likeRef: any) => likeRef.author.id !== userSession._id
+  //               ),
+  //             },
+  //           });
+  //         } else {
+           
+  //           const newLike = {
+  //             ...addLikeComment,
+  //             likeCount:0,
+  //             createdAt: new Date().toISOString(),
+  //             updatedAt: new Date().toISOString(),
+  //           };
+  
+  //           cache.writeQuery({
+  //             query: GET_LIST_LIKE_COMMENT,
+  //             variables: { commentId },
+  //             data: {
+  //               GetListLikeComment: [...likeListInCache, newLike],
+  //             },
+  //           });
+  //         }
+  //       },
+  //       optimisticResponse: {
+  //         __typename: "Mutation",
+  //         addLikeComment: {
+  //           __typename: "LikeComment",
+  //           content:"",
+  //           id: `temp-${Date.now()}`,
+  //           likeCount:0,
+  //           author: {
+  //             __typename: "User",
+  //             id: userSession._id,
+  //             name: userSession.name,
+  //             avatar: userSession.avatar || "",
+  //           },
+  //           createdAt: new Date().toISOString(),
+  //           updatedAt: new Date().toISOString(),
+  //         },
+  //       },
+  //     });
+  //   } catch (error) {
+  //     console.error("Error al agregar/eliminar el like", error);
+  //   }
+  // };
+  
 
   return {
     handleAddLikeComment

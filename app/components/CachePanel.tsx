@@ -5,6 +5,7 @@ import { useApolloClient } from '@apollo/client';
 const CachePanel = () => {
   const client = useApolloClient();
   const [cacheContent, setCacheContent] = useState(null);
+ //  console.log(cacheContent);
   
   const fetchCache = () => {
     const cacheData = client.cache.extract();

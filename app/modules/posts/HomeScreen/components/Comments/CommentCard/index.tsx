@@ -13,6 +13,9 @@ const CommentCard = ({comment, postId, userSession}:any) => {
   const name = comment?.author.name
   const content = comment.content
   const {handleDeleteComment} = useDeleteComment({commentId: comment.id, postId})
+  const myComment = userSession._id === comment.author.id
+  
+  
   //const createdAt = Number(comment?.createdAt)
   //const created = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
 
@@ -32,9 +35,11 @@ const CommentCard = ({comment, postId, userSession}:any) => {
       }
 
       RightComponent={
+         myComment ?
         <TouchableOpacity onPress={handleDeleteComment}>
           <Trash2 size={25} color={'black'}/>
         </TouchableOpacity>
+        :<></>
       }
      ContentComponent={
       <View style={{backgroundColor:'#F6F4F4', paddingHorizontal:5, borderRadius:5}}>

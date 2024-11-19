@@ -5,7 +5,7 @@ type Creddnetials = {
 
 export const oauth = async ({ userNameOrEmail, password }: Creddnetials) => {
   try {
-    const response = await fetch("http://192.168.1.3:3000/login", {
+    const response = await fetch("http://192.168.1.5:3000/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json", 
